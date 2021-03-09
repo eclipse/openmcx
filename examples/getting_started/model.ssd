@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SystemStructureDescription xmlns="http://ssp-standard.org/SSP1/SystemStructureDescription"
+                            xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+                            name="Getting Started"
+                            version="1.0">
+    <System name="Root">
+        <Elements>
+            <!-- definition of OpenMCx built-in component -->
+            <!-- source is empty as the signal generator doesn't have a source file/model -->
+            <!-- a custom MIME type is used -->
+            <Component name="Constant" source="" type="application/avl-mcx-constant">
+                <Connectors>
+                    <Connector name="out" kind="output">
+                        <ssc:Real/>
+                        <Annotations>
+                            <!-- custom annotation for defining OpenMCx specific port data -->
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <!-- disable storing values of the port into the result files -->
+                                    <mc:Real writeResults="false"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+                </Connectors>
+
+                <Annotations>
+                    <!-- custom annotation for defining OpenMCx specific component data -->
+                    <!-- each component might have custom specific data depending on the implementation -->
+                    <ssc:Annotation type="com.avl.model.connect.ssp.component.constant"
+                                    xmlns:mc="com.avl.model.connect.ssp.component.constant">
+                        <mc:SpecificData>
+                            <!-- the first connector of the constant will produce the value 3.0 -->
+                            <mc:Real value="3.0"/>
+                        </mc:SpecificData>
+                    </ssc:Annotation>
+                </Annotations>
+            </Component>
+
+            <Component name="FMU" source="../../fmus/gain.fmu" type="application/x-fmu-sharedlibrary">
+                <Connectors>
+                    <Connector name="out" kind="output">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <!-- nameInModel is the name of connector in the underlying source -->
+                                <!-- while interacting with the underlying source, OpenMCx will -->
+                                <!-- use the nameInModel -->
+                                <mc:Port nameInModel="real_out">
+                                    <mc:Real/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+                    <Connector name="in" kind="input">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port nameInModel="real_in">
+                                    <!-- default value used if nothing if the input is not connected -->
+                                    <mc:Real default="8.0"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+                </Connectors>
+            </Component>
+        </Elements>
+
+        <Connections>
+            <Connection startElement="Constant" startConnector="out" endElement="FMU" endConnector="in" />
+        </Connections>
+    </System>
+
+    <DefaultExperiment startTime="0.0" stopTime="1.0">
+        <Annotations>
+            <!-- additional OpenMCx specific simulation parameters -->
+            <ssc:Annotation type="com.avl.model.connect.ssp.task"
+                            xmlns:mc="com.avl.model.connect.ssp.task">
+                <!-- sequential execution of component steps -->
+                <!-- synchronization time step size of 0.001 -->
+                <!-- simulation will end when the stopTime is reached -->
+                <mc:Task stepType="sequential" deltaTime="0.001" endType="end_time"/>
+            </ssc:Annotation>
+        </Annotations>
+    </DefaultExperiment>
+</SystemStructureDescription>

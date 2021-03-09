@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="com.avl.model.connect.ssp.component.fmu"
+           xmlns:mse="com.avl.model.connect.ssp.component.fmu"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Copyright (c) 2020 AVL List GmbH and others
+            
+            This program and the accompanying materials are made available under the
+            terms of the Apache Software License 2.0 which is available at
+            https://www.apache.org/licenses/LICENSE-2.0.
+            
+            SPDX-License-Identifier: Apache-2.0
+        </xs:documentation>
+    </xs:annotation>
+
+    <!-- Attribute types -->
+
+    <!-- Element types -->
+    <xs:complexType name="LogCategoryT">
+        <xs:attribute name="value" type="xs:normalizedString" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="LogCategoriesT">
+        <xs:sequence>
+            <xs:element name="LogCategory" type="mse:LogCategoryT" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <!-- Root element -->
+    <xs:element name="SpecificData">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="LogCategories" type="mse:LogCategoriesT" minOccurs="0"/>
+            </xs:sequence>
+
+
+            <xs:attribute name="fmuLogging" type="xs:boolean" default="false"/>
+            <xs:attribute name="modelInternalVariables" type="xs:boolean" default="false"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

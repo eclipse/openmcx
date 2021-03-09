@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="com.avl.model.connect.ssp.port"
+           xmlns:mse="com.avl.model.connect.ssp.port"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Copyright (c) 2020 AVL List GmbH and others
+            
+            This program and the accompanying materials are made available under the
+            terms of the Apache Software License 2.0 which is available at
+            https://www.apache.org/licenses/LICENSE-2.0.
+            
+            SPDX-License-Identifier: Apache-2.0
+        </xs:documentation>
+    </xs:annotation>
+
+    <!-- vector data types -->
+    <xs:simpleType name="RealVectorT">
+        <xs:list itemType="xs:double"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="IntegerVectorT">
+        <xs:list itemType="xs:int"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="BooleanVectorT">
+        <xs:list itemType="xs:boolean"/>
+    </xs:simpleType>
+
+    <!-- common attributes -->
+    <xs:attributeGroup name="CommonScalarPortAttributes">
+        <xs:attribute name="writeResults" type="xs:boolean"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="CommonVectorPortAttributes">
+        <xs:attribute name="startIndex" type="xs:unsignedInt" use="required"/>
+        <xs:attribute name="endIndex" type="xs:unsignedInt" use="required"/>
+
+        <xs:attribute name="writeResults" type="mse:BooleanVectorT"/>
+    </xs:attributeGroup>
+
+    <!-- scalar ports -->
+    <xs:complexType name="RealPortT">
+        <xs:attribute name="min" type="xs:double"/>
+        <xs:attribute name="max" type="xs:double"/>
+        <xs:attribute name="scale" type="xs:double"/>
+        <xs:attribute name="offset" type="xs:double"/>
+        <xs:attribute name="default" type="xs:double"/>
+        <xs:attribute name="initial" type="xs:double"/>
+
+        <xs:attributeGroup ref="mse:CommonScalarPortAttributes"/>
+    </xs:complexType>
+
+    <xs:complexType name="IntegerPortT">
+        <xs:attribute name="min" type="xs:int"/>
+        <xs:attribute name="max" type="xs:int"/>
+        <xs:attribute name="scale" type="xs:int"/>
+        <xs:attribute name="offset" type="xs:int"/>
+        <xs:attribute name="default" type="xs:int"/>
+        <xs:attribute name="initial" type="xs:int"/>
+
+        <xs:attributeGroup ref="mse:CommonScalarPortAttributes"/>
+    </xs:complexType>
+
+    <xs:complexType name="BooleanPortT">
+        <xs:attribute name="default" type="xs:boolean"/>
+        <xs:attribute name="initial" type="xs:boolean"/>
+
+        <xs:attributeGroup ref="mse:CommonScalarPortAttributes"/>
+    </xs:complexType>
+
+    <xs:complexType name="StringPortT">
+        <xs:attribute name="default" type="xs:string"/>
+        <xs:attribute name="initial" type="xs:string"/>
+
+        <xs:attributeGroup ref="mse:CommonScalarPortAttributes"/>
+    </xs:complexType>
+
+    <!-- binary ports -->
+    <xs:complexType name="BinaryPortT" />
+    <xs:complexType name="BinaryPortReferenceT"/>
+
+    <!-- vector ports -->
+    <xs:complexType name="RealVectorPortT">
+        <xs:attribute name="min" type="mse:RealVectorT"/>
+        <xs:attribute name="max" type="mse:RealVectorT"/>
+        <xs:attribute name="scale" type="mse:RealVectorT"/>
+        <xs:attribute name="offset" type="mse:RealVectorT"/>
+        <xs:attribute name="default" type="mse:RealVectorT"/>
+        <xs:attribute name="initial" type="mse:RealVectorT"/>
+
+        <xs:attributeGroup ref="mse:CommonVectorPortAttributes"/>
+    </xs:complexType>
+
+    <xs:complexType name="IntegerVectorPortT">
+        <xs:attribute name="min" type="mse:IntegerVectorT"/>
+        <xs:attribute name="max" type="mse:IntegerVectorT"/>
+        <xs:attribute name="scale" type="mse:IntegerVectorT"/>
+        <xs:attribute name="offset" type="mse:IntegerVectorT"/>
+        <xs:attribute name="default" type="mse:IntegerVectorT"/>
+        <xs:attribute name="initial" type="mse:IntegerVectorT"/>
+
+        <xs:attributeGroup ref="mse:CommonVectorPortAttributes"/>
+    </xs:complexType>
+
+    <!-- port choice -->
+    <xs:group name="PortTypeChoiceG">
+        <xs:choice>
+            <xs:element name="Real" type="mse:RealPortT"/>
+            <xs:element name="Integer" type="mse:IntegerPortT"/>
+            <xs:element name="String" type="mse:StringPortT"/>
+            <xs:element name="Boolean" type="mse:BooleanPortT"/>
+
+            <xs:element name="Binary" type="mse:BinaryPortT"/>
+            <xs:element name="BinaryReference" type="mse:BinaryPortReferenceT"/>
+
+            <xs:element name="RealVector" type="mse:RealVectorPortT"/>
+            <xs:element name="IntegerVector" type="mse:IntegerVectorPortT"/>
+        </xs:choice>
+    </xs:group>
+
+    <!-- Root element -->
+    <xs:element name="Port">
+        <xs:complexType>
+            <xs:group ref="mse:PortTypeChoiceG"/>
+
+            <xs:attribute name="nameInModel" type="xs:normalizedString"/>
+            <xs:attribute name="id" type="xs:normalizedString"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

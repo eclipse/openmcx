@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="com.avl.model.connect.ssp.connection"
+           xmlns:mse="com.avl.model.connect.ssp.connection"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Copyright (c) 2020 AVL List GmbH and others
+            
+            This program and the accompanying materials are made available under the
+            terms of the Apache Software License 2.0 which is available at
+            https://www.apache.org/licenses/LICENSE-2.0.
+            
+            SPDX-License-Identifier: Apache-2.0
+        </xs:documentation>
+    </xs:annotation>
+
+    <!-- Element types -->
+    <xs:complexType name="EndPointT">
+        <xs:attribute name="startIndex" type="xs:unsignedInt" use="required"/>
+        <xs:attribute name="endIndex" type="xs:unsignedInt" use="required"/>
+    </xs:complexType>
+
+    <!-- Root element -->
+    <xs:element name="Connection">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Start" type="mse:EndPointT" minOccurs="0"/>
+                <xs:element name="End" type="mse:EndPointT" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

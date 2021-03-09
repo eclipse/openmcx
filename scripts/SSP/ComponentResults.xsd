@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="com.avl.model.connect.ssp.component.results"
+           xmlns:msec="com.avl.model.connect.ssp.common"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Copyright (c) 2020 AVL List GmbH and others
+            
+            This program and the accompanying materials are made available under the
+            terms of the Apache Software License 2.0 which is available at
+            https://www.apache.org/licenses/LICENSE-2.0.
+            
+            SPDX-License-Identifier: Apache-2.0
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:import namespace="com.avl.model.connect.ssp.common" schemaLocation="Common.xsd"/>
+
+    <!-- Root element -->
+    <xs:element name="Results">
+        <xs:complexType>
+            <xs:attribute name="rtFactor" type="xs:boolean" default="false"/>
+            <xs:attribute name="resultLevel" type="msec:ResultLevelT"/>
+
+            <xs:attribute name="startTime" type="xs:double"/>
+            <xs:attribute name="endTime" type="xs:double"/>
+            <xs:attribute name="stepTime" type="xs:double"/>
+            <xs:attribute name="stepCount" type="xs:unsignedInt" default="0"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

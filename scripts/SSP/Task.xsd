@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="com.avl.model.connect.ssp.task"
+           xmlns:mse="com.avl.model.connect.ssp.task"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Copyright (c) 2020 AVL List GmbH and others
+            
+            This program and the accompanying materials are made available under the
+            terms of the Apache Software License 2.0 which is available at
+            https://www.apache.org/licenses/LICENSE-2.0.
+            
+            SPDX-License-Identifier: Apache-2.0
+        </xs:documentation>
+    </xs:annotation>
+
+    <!-- Attribute types -->
+    <xs:simpleType name="EndTypeT">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="first_component"/>
+            <xs:enumeration value="end_time"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="StepTypeT">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="sequential"/>
+            <xs:enumeration value="parallel_single_thread"/>
+            <xs:enumeration value="parallel_one_step_size"/>
+            <xs:enumeration value="parallel_sync_all"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Root element -->
+    <xs:element name="Task">
+        <xs:complexType>
+            <xs:attribute name="deltaTime" type="xs:double" default="0.01"/>
+            <xs:attribute name="endType" type="mse:EndTypeT" default="end_time"/>
+            <xs:attribute name="sumTime" type="xs:boolean" default="false"/>
+            <xs:attribute name="stepType" type="mse:StepTypeT" use="required"/>
+            <xs:attribute name="inputAtEndTime" type="xs:boolean" default="false"/>
+            <xs:attribute name="relativeEps" type="xs:double" default="1e-10"/>
+            <xs:attribute name="timingOutput" type="xs:boolean" default="false"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

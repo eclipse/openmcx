@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="com.avl.model.connect.ssp.component.constant"
+           xmlns:mse="com.avl.model.connect.ssp.component.constant"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Copyright (c) 2020 AVL List GmbH and others
+            
+            This program and the accompanying materials are made available under the
+            terms of the Apache Software License 2.0 which is available at
+            https://www.apache.org/licenses/LICENSE-2.0.
+            
+            SPDX-License-Identifier: Apache-2.0
+        </xs:documentation>
+    </xs:annotation>
+
+    <!-- Element definitions -->
+    <xs:complexType name="RealT">
+        <xs:attribute name="value" type="xs:double" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="IntegerT">
+        <xs:attribute name="value" type="xs:integer" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="StringT">
+        <xs:attribute name="value" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="BooleanT">
+        <xs:attribute name="value" type="xs:boolean" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="RealVectorT">
+        <xs:attribute name="value" use="required">
+            <xs:simpleType>
+                <xs:list itemType="xs:double"/>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="IntegerVectorT">
+        <xs:attribute name="value" use="required">
+            <xs:simpleType>
+                <xs:list itemType="xs:int"/>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <!-- Root element -->
+    <xs:element name="SpecificData">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="1" maxOccurs="unbounded">
+                    <xs:element name="Real" type="mse:RealT"/>
+                    <xs:element name="Integer" type="mse:IntegerT"/>
+                    <xs:element name="String" type="mse:StringT"/>
+                    <xs:element name="Boolean" type="mse:BooleanT"/>
+
+                    <xs:element name="RealVector" type="mse:RealVectorT"/>
+                    <xs:element name="IntegerVector" type="mse:IntegerVectorT"/>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

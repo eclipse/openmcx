@@ -1,0 +1,11 @@
+# build
+/extern/fmi-library/
+/build/
+/install/
+
+# dev
+.vscode/
+
+# examples
+results/
+simulation.log

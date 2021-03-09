@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SystemStructureDescription xmlns="http://ssp-standard.org/SSP1/SystemStructureDescription"
+                            xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+                            xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+                            version="1.0"
+                            name="connections">
+    <System name="Root">
+        <Elements>
+            <Component name="Sum 1" source="../../fmus/vectorSum.fmu">
+                <Connectors>
+                    <Connector name="v_1" kind="input">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:RealVector startIndex="1" endIndex="3"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+
+                    <Connector name="v_2" kind="input">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:RealVector startIndex="1" endIndex="3" default="1.0 2.0 3.0"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+
+                    <Connector name="b" kind="output">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:RealVector startIndex="1" endIndex="3"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+                </Connectors>
+            </Component>
+
+            <Component name="Sinus 1" source="../../fmus/sinusGenerator.fmu">
+                <Connectors>
+                    <Connector name="sinus_out" kind="output">
+                        <ssc:Real/>
+                    </Connector>
+                </Connectors>
+
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.component"
+                                    xmlns:mc="com.avl.model.connect.ssp.component">
+                        <!-- define the coupling time step size as 0.05 -->
+                        <!-- the synchronization time step size is 0.01 by default -->
+                        <!-- this enables us to see the influence of the extrapolation settings -->
+                        <mc:Component deltaTime="0.05" />
+                    </ssc:Annotation>
+                </Annotations>
+            </Component>
+
+            <Component name="Gain 1" source="../../fmus/gain.fmu">
+                <Connectors>
+                    <Connector name="real_in" kind="input">
+                        <ssc:Real/>
+                    </Connector>
+
+                    <Connector name="real_out" kind="output">
+                        <ssc:Real/>
+                    </Connector>
+                </Connectors>
+            </Component>
+        </Elements>
+
+        <Connections>
+            <!-- connection between two scalar ports -->
+            <Connection startElement="Sinus 1" startConnector="sinus_out" endElement="Gain 1" endConnector="real_in">
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection.inter_extrapolation"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection.inter_extrapolation">
+                        <!-- inter/extrapolation settings used used for calculating not available values -->
+                        <mc:InterExtrapolation extrapolationOrder="first" interpolationOrder="first"/>
+                    </ssc:Annotation>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection.decoupling"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection.decoupling">
+                        <mc:Decoupling>
+                            <!-- define whether it is allowed to decouple this connection when -->
+                            <!-- determining the evaluation order of the components -->
+                            <mc:IfNeeded/>
+                        </mc:Decoupling>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+
+            <!-- vector connections -->
+            <Connection startElement="Gain 1" startConnector="real_out" endElement="Sum 1" endConnector="v_1">
+                <Annotations>
+                    <!-- for vector connections it is mandatory to define the vector indices -->
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection">
+                        <mc:Connection>
+                            <!-- define with which vector element real_out is connected -->
+                            <mc:End startIndex="1" endIndex="1"/>
+                        </mc:Connection>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+
+            <Connection startElement="Gain 1" startConnector="real_out" endElement="Sum 1" endConnector="v_1">
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection">
+                        <mc:Connection>
+                            <mc:End startIndex="2" endIndex="2"/>
+                        </mc:Connection>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+
+            <Connection startElement="Gain 1" startConnector="real_out" endElement="Sum 1" endConnector="v_1">
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection">
+                        <mc:Connection>
+                            <mc:End startIndex="3" endIndex="3"/>
+                        </mc:Connection>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+        </Connections>
+    </System>
+
+    <DefaultExperiment stopTime="10.0"/>
+</SystemStructureDescription>

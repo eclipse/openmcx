@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fmiModelDescription
+  copyright="Copyright: 2021 AVL List GmbH"
+  fmiVersion="2.0"
+  modelName="sinusGenerator"
+  guid="{cc29f14c-33de-4c2f-a6ac-fd1c21bca19c}"
+  numberOfEventIndicators="0">
+
+<CoSimulation
+  modelIdentifier="sinusGenerator"
+  canHandleVariableCommunicationStepSize="true"/>
+
+<LogCategories>
+  <Category name="logAll"/>
+  <Category name="logError"/>
+  <Category name="logFmiCall"/>
+  <Category name="logEvent"/>
+</LogCategories>
+
+  <ModelVariables>
+    <!-- index="1" -->
+    <ScalarVariable name="sin.amplitude" valueReference="0" description="Amplitude of sine wave" causality="parameter" variability="tunable">
+      <Real start="10"/>
+    </ScalarVariable>
+
+    <!-- index="2" -->
+    <ScalarVariable name="sin.freqHz" valueReference="1" description="Frequency of sine wave" causality="parameter" variability="tunable">
+      <Real start="5"/>
+    </ScalarVariable>
+
+    <!-- index="3" -->
+    <ScalarVariable name="sin.phase" valueReference="2" description="Phase of sine wave" causality="parameter" variability="tunable">
+      <Real start="0"/>
+    </ScalarVariable>
+
+    <!-- index="4" -->
+    <ScalarVariable name="sin.offset" valueReference="3" description="Offset of output signal" causality="parameter" variability="tunable">
+      <Real start="0"/>
+    </ScalarVariable>
+
+    <!-- index="5" -->
+    <ScalarVariable name="sin.startTime" valueReference="4" description="Output = offset for time &lt; startTime" causality="parameter" variability="tunable">
+      <Real start="0"/>
+    </ScalarVariable>
+
+    <!-- index="6" -->
+    <ScalarVariable name="sinus_out" valueReference="5" causality="output">
+      <Real />
+    </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="6" dependencies="" dependenciesKind=""/>
+    </Outputs>
+    <InitialUnknowns>
+      <Unknown index="6" dependencies="1 2 3 4 5" dependenciesKind="dependent dependent dependent dependent dependent"/>
+    </InitialUnknowns>
+
+</ModelStructure>
+
+</fmiModelDescription>

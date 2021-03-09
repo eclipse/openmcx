@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="com.avl.model.connect.ssp.results"
+           xmlns:mse="com.avl.model.connect.ssp.results"
+           xmlns:msec="com.avl.model.connect.ssp.common"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            Copyright (c) 2020 AVL List GmbH and others
+            
+            This program and the accompanying materials are made available under the
+            terms of the Apache Software License 2.0 which is available at
+            https://www.apache.org/licenses/LICENSE-2.0.
+            
+            SPDX-License-Identifier: Apache-2.0
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:import namespace="com.avl.model.connect.ssp.common" schemaLocation="Common.xsd"/>
+
+    <!-- Attribute types -->
+    <xs:simpleType name="BackendTypeT">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="csv"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Element types -->
+    <xs:complexType name="BackendT">
+        <xs:attribute name="type" type="mse:BackendTypeT" use="required"/>
+        <xs:attribute name="storeAtRuntime" type="xs:boolean" default="true"/>
+    </xs:complexType>
+
+    <xs:complexType name="BackendsT">
+        <xs:sequence>
+            <xs:element name="Backend" type="mse:BackendT" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Root element -->
+    <xs:element name="Results">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Backends" type="mse:BackendsT"/>
+            </xs:sequence>
+
+            <xs:attribute name="outputDirectory" type="xs:normalizedString"/>
+            <xs:attribute name="resultLevel" type="msec:ResultLevelT" default="synchronization"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

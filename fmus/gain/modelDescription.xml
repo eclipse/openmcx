@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fmiModelDescription
+  copyright="Copyright: 2021 AVL List GmbH"
+  fmiVersion="2.0"
+  modelName="gain"
+  guid="{55bbf557-23d8-43d2-a4e2-3bca49099dfe}"
+  numberOfEventIndicators="0">
+
+<CoSimulation
+  modelIdentifier="gain"
+  canHandleVariableCommunicationStepSize="true"/>
+
+<LogCategories>
+  <Category name="logAll"/>
+  <Category name="logError"/>
+  <Category name="logFmiCall"/>
+  <Category name="logEvent"/>
+</LogCategories>
+
+<ModelVariables>
+  <!-- index="1" -->
+  <ScalarVariable name="real_in" valueReference="0" description="real_in" causality="input">
+    <Real start="0.0"/>
+  </ScalarVariable>
+
+  <!-- index="2" -->
+  <ScalarVariable name="real_out" valueReference="1" description="real output" causality="output">
+    <Real />
+  </ScalarVariable>
+
+  <!-- index="3" -->
+  <ScalarVariable name="factor" valueReference="2" description="gain factor" causality="parameter" variability="fixed" initial="exact">
+    <Real start="1.0"/>
+  </ScalarVariable>
+</ModelVariables>
+
+<ModelStructure>
+  <Outputs>
+    <Unknown index="2" dependencies="1" dependenciesKind="fixed"/>
+  </Outputs>
+  <InitialUnknowns>
+    <Unknown index="2" dependencies="1" dependenciesKind="dependent"/>
+  </InitialUnknowns>
+</ModelStructure>
+
+</fmiModelDescription>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SystemStructureDescription xmlns="http://ssp-standard.org/SSP1/SystemStructureDescription"
+                            xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+                            xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+                            version="1.0"
+                            name="Model.CONNECT 1">
+    <System name="Root">
+        <Elements>
+            <Component name="FMU 1" source="../../fmus/sinusGenerator.fmu">
+                <Connectors>
+                    <Connector name="sinus_out" kind="output">
+                        <ssc:Real/>
+                    </Connector>
+
+                    <Connector name="sin.amplitude" kind="parameter">
+                        <ssc:Real/>
+                    </Connector>
+                    <Connector name="sin.freqHz" kind="parameter">
+                        <ssc:Real/>
+                    </Connector>
+                    <Connector name="sin.phase" kind="parameter">
+                        <ssc:Real/>
+                    </Connector>
+                    <Connector name="sin.offset" kind="parameter">
+                        <ssc:Real/>
+                    </Connector>
+                    <Connector name="sin.startTime" kind="parameter">
+                        <ssc:Real/>
+                    </Connector>
+                </Connectors>
+
+                <ParameterBindings>
+                    <ParameterBinding type="application/x-ssp-parameter-set">
+                        <ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="sin.amplitude">
+                                        <ssv:Real value="100.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="sin.freqHz">
+                                        <ssv:Real value="5.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="sin.phase">
+                                        <ssv:Real value="0.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="sin.offset">
+                                        <ssv:Real value="0.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="sin.startTime">
+                                        <ssv:Real value="0.0"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ParameterValues>
+                    </ParameterBinding>
+                    <ParameterBinding type="application/x-ssp-parameter-set">
+                        <ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="sin.amplitude">
+                                        <ssv:Real value="13.0"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ParameterValues>
+                    </ParameterBinding>
+                </ParameterBindings>
+            </Component>
+        </Elements>
+    </System>
+
+    <DefaultExperiment stopTime="1.0"/>
+</SystemStructureDescription>

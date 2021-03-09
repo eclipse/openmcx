@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SystemStructureDescription xmlns="http://ssp-standard.org/SSP1/SystemStructureDescription"
+                            xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+                            xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+                            version="1.0"
+                            name="Model.CONNECT 1">
+    <System name="Root">
+        <Elements>
+            <Component name="Constant 1" source="" type="application/avl-mcx-constant">
+                <Connectors>
+                    <Connector name="Output" kind="output">
+                        <ssc:Real unit="m"/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:Real initial="3.0"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+
+                    <Connector name="Output1" kind="output">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:RealVector startIndex="1" endIndex="3" initial="1.0 2.0 3.0"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+                </Connectors>
+
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.component.constant"
+                                    xmlns:mc="com.avl.model.connect.ssp.component.constant">
+                        <mc:SpecificData>
+                            <mc:Real value="3.0"/>
+                            <mc:RealVector value="1.0 2.0 3.0"/>
+                        </mc:SpecificData>
+                    </ssc:Annotation>
+                </Annotations>
+            </Component>
+
+            <Component name="FMU 1" source="../../fmus/vectorSum.fmu">
+                <Connectors>
+                    <Connector name="v_1" kind="input">
+                        <ssc:Real unit="cm"/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:RealVector startIndex="1" endIndex="3"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+
+                    <Connector name="v_2" kind="input">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:RealVector startIndex="1" endIndex="3"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+
+                    <Connector name="b" kind="output">
+                        <ssc:Real/>
+                        <Annotations>
+                            <ssc:Annotation type="com.avl.model.connect.ssp.port"
+                                            xmlns:mc="com.avl.model.connect.ssp.port">
+                                <mc:Port>
+                                    <mc:RealVector startIndex="1" endIndex="3"/>
+                                </mc:Port>
+                            </ssc:Annotation>
+                        </Annotations>
+                    </Connector>
+                </Connectors>
+            </Component>
+        </Elements>
+
+        <Connections>
+            <Connection startElement="Constant 1" startConnector="Output" endElement="FMU 1" endConnector="v_1">
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection">
+                        <mc:Connection>
+                            <mc:End startIndex="3" endIndex="3"/>
+                        </mc:Connection>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+
+            <Connection startElement="Constant 1" startConnector="Output" endElement="FMU 1" endConnector="v_1">
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection">
+                        <mc:Connection>
+                            <mc:End startIndex="2" endIndex="2"/>
+                        </mc:Connection>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+
+            <Connection startElement="Constant 1" startConnector="Output" endElement="FMU 1" endConnector="v_1">
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection">
+                        <mc:Connection>
+                            <mc:End startIndex="1" endIndex="1"/>
+                        </mc:Connection>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+
+            <Connection startElement="Constant 1" startConnector="Output1" endElement="FMU 1" endConnector="v_2">
+                <Annotations>
+                    <ssc:Annotation type="com.avl.model.connect.ssp.connection"
+                                    xmlns:mc="com.avl.model.connect.ssp.connection">
+                        <mc:Connection>
+                            <mc:Start startIndex="1" endIndex="3"/>
+                            <mc:End startIndex="1" endIndex="3"/>
+                        </mc:Connection>
+                    </ssc:Annotation>
+                </Annotations>
+            </Connection>
+        </Connections>
+    </System>
+
+    <Units>
+        <!-- unit definitions -->
+        <ssc:Unit name="m">
+            <ssc:BaseUnit m="1"/>
+        </ssc:Unit>
+
+        <ssc:Unit name="cm">
+            <ssc:BaseUnit m="1" factor="0.01"/>
+        </ssc:Unit>
+    </Units>
+
+    <DefaultExperiment stopTime="0.02">
+        <Annotations>
+            <ssc:Annotation type="com.avl.model.connect.ssp.task" xmlns:mc="com.avl.model.connect.ssp.task">
+                <mc:Task stepType="sequential"/>
+            </ssc:Annotation>
+        </Annotations>
+    </DefaultExperiment>
+</SystemStructureDescription>
