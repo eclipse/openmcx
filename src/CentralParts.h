@@ -139,10 +139,11 @@ typedef struct InterExtrapolationParams {
 
 
 typedef enum {
-    CHANNEL_STORE_IN    = 0,
-    CHANNEL_STORE_OUT   = 1,
-    CHANNEL_STORE_LOCAL = 2,
-    CHANNEL_STORE_NUM   = 3
+    CHANNEL_STORE_IN       = 0,
+    CHANNEL_STORE_OUT      = 1,
+    CHANNEL_STORE_LOCAL    = 2,
+    CHANNEL_STORE_RTFACTOR = 3,
+    CHANNEL_STORE_NUM      = 4
 } ChannelStoreType;
 
 typedef enum StoreLevel {

@@ -53,10 +53,12 @@ typedef struct DatabusData {
     struct ChannelIn ** in;   /**< input channels */
     struct ChannelOut ** out; /**< output channels */
     struct ChannelLocal ** local; /**< local (non-connectable) channels */
+    struct ChannelRTFactor ** rtfactor; /**< rtfactor (non-connectable) channels */
 
     struct DatabusInfo * inInfo;  /**< metadata (size, properties) for \a in */
     struct DatabusInfo * outInfo; /**< metadata (size, properties) for \a out */
     struct DatabusInfo * localInfo; /**< metadata (size, properties) for \a local */
+    struct DatabusInfo * rtfactorInfo; /**< metadata (size, properties) for \a local */
 } DatabusData;
 
 #ifdef __cplusplus

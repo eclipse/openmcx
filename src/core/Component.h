@@ -151,10 +151,12 @@ struct Component {
     fComponentGetNumber GetNumInChannels;
     fComponentGetNumber GetNumOutChannels;
     fComponentGetNumber GetNumLocalChannels;
+    fComponentGetNumber GetNumRTFactorChannels;
 
     fComponentGetNumber GetNumWriteInChannels;
     fComponentGetNumber GetNumWriteOutChannels;
     fComponentGetNumber GetNumWriteLocalChannels;
+    fComponentGetNumber GetNumWriteRTFactorChannels;
 
     fComponentGetNumber GetNumConnectedOutChannels;
 

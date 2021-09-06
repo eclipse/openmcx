@@ -173,16 +173,17 @@ static McxStatus PpdFolderAddElement(PpdFolder * folder, PpdElement * element) {
 
 static char PPD_SEP = '.';
 
-static PpdFolder * PpdFolderInsertComponent(PpdFolder * folder, const char * linkType, const char * compName, const char * fileNameOut, const char * fileNameIn, const char * fileNameLocal) {
+static PpdFolder * PpdFolderInsertComponent(PpdFolder * folder, const char * linkType, const char * compName, const char * fileNameOut, const char * fileNameIn, const char * fileNameLocal, const char * fileNameRTFactor) {
     const char * sep = strchr(compName, PPD_SEP);
 
     if (!sep) {
         PpdFolder * compFolder   = PpdFolderMake(compName, compName);
         PpdFolder * compFolderIn = PpdFolderMake("In", "In");
 
-        PpdLink * compLink      = fileNameOut   ? PpdLinkMake(linkType, fileNameOut)   : NULL;
-        PpdLink * compLinkIn    = fileNameIn    ? PpdLinkMake(linkType, fileNameIn)    : NULL;
-        PpdLink * compLinkLocal = fileNameLocal ? PpdLinkMake(linkType, fileNameLocal) : NULL;
+        PpdLink * compLink         = fileNameOut      ? PpdLinkMake(linkType, fileNameOut)      : NULL;
+        PpdLink * compLinkIn       = fileNameIn       ? PpdLinkMake(linkType, fileNameIn)       : NULL;
+        PpdLink * compLinkLocal    = fileNameLocal    ? PpdLinkMake(linkType, fileNameLocal)    : NULL;
+        PpdLink * compLinkRTFactor = fileNameRTFactor ? PpdLinkMake(linkType, fileNameRTFactor) : NULL;
 
         McxStatus retVal = RETURN_OK;
 
@@ -214,6 +215,11 @@ static PpdFolder * PpdFolderInsertComponent(PpdFolder * folder, const char * lin
 
         if (compLinkLocal) {
             retVal = compFolder->AddElement(compFolder, (PpdElement *) compLinkLocal);
+            if (RETURN_OK != retVal) { return NULL; }
+        }
+
+        if (compLinkRTFactor) {
+            retVal = compFolder->AddElement(compFolder, (PpdElement *) compLinkRTFactor);
             if (RETURN_OK != retVal) { return NULL; }
         }
 
@@ -277,7 +283,7 @@ static PpdFolder * PpdFolderInsertComponent(PpdFolder * folder, const char * lin
         /*
          * Insert component into subfolder recursively
          */
-        return compFolder->InsertComponent(compFolder, linkType, sep + 1, fileNameOut, fileNameIn, fileNameLocal);
+        return compFolder->InsertComponent(compFolder, linkType, sep + 1, fileNameOut, fileNameIn, fileNameLocal, fileNameRTFactor);
     }
 }
 

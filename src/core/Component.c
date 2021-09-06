@@ -216,7 +216,7 @@ static McxStatus ComponentSetupRTFactor(Component * comp) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not create ID for port %s", "RealTime Clock");
             return RETURN_ERROR;
         }
-        if (RETURN_ERROR == DatabusAddLocalChannel(comp->data->databus, "RealTime Clock", id, GetTimeUnitString(), &comp->data->rtData.simTimeTotal, CHANNEL_DOUBLE)) {
+        if (RETURN_ERROR == DatabusAddRTFactorChannel(comp->data->databus, "RealTime Clock", id, GetTimeUnitString(), &comp->data->rtData.simTimeTotal, CHANNEL_DOUBLE)) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not add port %s", "RealTime Clock");
             mcx_free(id);
             return RETURN_ERROR;
@@ -228,7 +228,7 @@ static McxStatus ComponentSetupRTFactor(Component * comp) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not create ID for port %s", "RealTime Clock Calc");
             return RETURN_ERROR;
         }
-        if (RETURN_ERROR == DatabusAddLocalChannel(comp->data->databus, "RealTime Clock Calc", id, GetTimeUnitString(), &comp->data->rtData.simTime, CHANNEL_DOUBLE)) {
+        if (RETURN_ERROR == DatabusAddRTFactorChannel(comp->data->databus, "RealTime Clock Calc", id, GetTimeUnitString(), &comp->data->rtData.simTime, CHANNEL_DOUBLE)) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not add port %s", "RealTime Clock Calc");
             mcx_free(id);
             return RETURN_ERROR;
@@ -240,7 +240,7 @@ static McxStatus ComponentSetupRTFactor(Component * comp) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not create ID for port %s", "RealTime Factor Calc");
             return RETURN_ERROR;
         }
-        if (RETURN_ERROR == DatabusAddLocalChannel(comp->data->databus, "RealTime Factor Calc", id, "-", &comp->data->rtData.rtFactor, CHANNEL_DOUBLE)) {
+        if (RETURN_ERROR == DatabusAddRTFactorChannel(comp->data->databus, "RealTime Factor Calc", id, "-", &comp->data->rtData.rtFactor, CHANNEL_DOUBLE)) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not add port %s", "RealTime Factor Calc");
             mcx_free(id);
             return RETURN_ERROR;
@@ -252,7 +252,7 @@ static McxStatus ComponentSetupRTFactor(Component * comp) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not create ID for port %s", "RealTime Factor Calc (Avg)");
             return RETURN_ERROR;
         }
-        if (RETURN_ERROR == DatabusAddLocalChannel(comp->data->databus, "RealTime Factor Calc (Avg)", id, "-", &comp->data->rtData.rtFactorAvg, CHANNEL_DOUBLE)) {
+        if (RETURN_ERROR == DatabusAddRTFactorChannel(comp->data->databus, "RealTime Factor Calc (Avg)", id, "-", &comp->data->rtData.rtFactorAvg, CHANNEL_DOUBLE)) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not add port %s", "RealTime Factor Calc (Avg)");
             mcx_free(id);
             return RETURN_ERROR;
@@ -264,7 +264,7 @@ static McxStatus ComponentSetupRTFactor(Component * comp) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not create ID for port %s", "RealTime Factor");
             return RETURN_ERROR;
         }
-        if (RETURN_ERROR == DatabusAddLocalChannel(comp->data->databus, "RealTime Factor", id, "-", &comp->data->rtData.totalRtFactor, CHANNEL_DOUBLE)) {
+        if (RETURN_ERROR == DatabusAddRTFactorChannel(comp->data->databus, "RealTime Factor", id, "-", &comp->data->rtData.totalRtFactor, CHANNEL_DOUBLE)) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not add port %s", "RealTime Factor");
             mcx_free(id);
             return RETURN_ERROR;
@@ -276,7 +276,7 @@ static McxStatus ComponentSetupRTFactor(Component * comp) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not create ID for port %s", "RealTime Clock Calc");
             return RETURN_ERROR;
         }
-        if (RETURN_ERROR == DatabusAddLocalChannel(comp->data->databus, "RealTime Factor (Avg)", id, "-", &comp->data->rtData.totalRtFactorAvg, CHANNEL_DOUBLE)) {
+        if (RETURN_ERROR == DatabusAddRTFactorChannel(comp->data->databus, "RealTime Factor (Avg)", id, "-", &comp->data->rtData.totalRtFactorAvg, CHANNEL_DOUBLE)) {
             ComponentLog(comp, LOG_ERROR, "Setup real time factor: Could not add port %s", "RealTime Clock Calc");
             mcx_free(id);
             return RETURN_ERROR;
@@ -292,6 +292,7 @@ McxStatus ComponentRegisterStorage(Component * comp, ResultsStorage * storage) {
     size_t numInChannels = DatabusGetInChannelsNum(db);
     size_t numOutChannels = DatabusGetOutChannelsNum(db);
     size_t numLocalChannels = DatabusGetLocalChannelsNum(db);
+    size_t numRTFactorChannels = DatabusGetRTFactorChannelsNum(db);
 
     ComponentStorage * compStore = comp->data->storage;
 
@@ -355,6 +356,16 @@ McxStatus ComponentRegisterStorage(Component * comp, ResultsStorage * storage) {
         retVal = compStore->RegisterChannel(compStore, CHANNEL_STORE_LOCAL, channel);
         if (RETURN_OK != retVal) {
             ComponentLog(comp, LOG_ERROR, "Could not register local variable %d at storage", i);
+            return RETURN_ERROR;
+        }
+    }
+
+    for (i = 0; i < numRTFactorChannels; i++) {
+        Channel * channel = (Channel *) DatabusGetRTFactorChannel(db, i);
+
+        retVal = compStore->RegisterChannel(compStore, CHANNEL_STORE_RTFACTOR, channel);
+        if (RETURN_OK != retVal) {
+            ComponentLog(comp, LOG_ERROR, "Could not register rtfactor variable %d at storage", i);
             return RETURN_ERROR;
         }
     }
@@ -527,6 +538,10 @@ static size_t ComponentGetNumLocalChannels(const Component * comp) {
     return DatabusGetLocalChannelsNum(comp->data->databus);
 }
 
+static size_t ComponentGetNumRTFactorChannels(const Component * comp) {
+    return DatabusGetRTFactorChannelsNum(comp->data->databus);
+}
+
 static size_t ComponentGetNumWriteInChannels(const Component * comp) {
     return DatabusInfoGetNumWriteChannels(DatabusGetInInfo(comp->data->databus));
 }
@@ -537,6 +552,10 @@ static size_t ComponentGetNumWriteOutChannels(const Component * comp) {
 
 static size_t ComponentGetNumWriteLocalChannels(const Component * comp) {
     return DatabusInfoGetNumWriteChannels(DatabusGetLocalInfo(comp->data->databus));
+}
+
+static size_t ComponentGetNumWriteRTFactorChannels(const Component * comp) {
+    return DatabusInfoGetNumWriteChannels(DatabusGetRTFactorInfo(comp->data->databus));
 }
 
 static size_t ComponentGetNumConnectedOutChannels(const Component * comp) {
@@ -1059,10 +1078,12 @@ static Component * ComponentCreate(Component * comp) {
     comp->GetNumInChannels = ComponentGetNumInChannels;
     comp->GetNumOutChannels = ComponentGetNumOutChannels;
     comp->GetNumLocalChannels = ComponentGetNumLocalChannels;
+    comp->GetNumRTFactorChannels = ComponentGetNumRTFactorChannels;
 
     comp->GetNumWriteInChannels = ComponentGetNumWriteInChannels;
     comp->GetNumWriteOutChannels = ComponentGetNumWriteOutChannels;
     comp->GetNumWriteLocalChannels = ComponentGetNumWriteLocalChannels;
+    comp->GetNumWriteRTFactorChannels = ComponentGetNumWriteRTFactorChannels;
 
     comp->GetNumConnectedOutChannels = ComponentGetNumConnectedOutChannels;
     comp->GetNumOutGroups = ComponentGetNumOutGroups;

@@ -26,7 +26,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-const char * const ChannelStoreSuffix[] = {"in", "res", "local"};
+const char * const ChannelStoreSuffix[] = {"in", "res", "local", "rtfactor"};
 
 // ----------------------------------------------------------------------
 // Storage Backend
