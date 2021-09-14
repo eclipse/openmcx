@@ -1017,17 +1017,17 @@ static McxStatus ChannelRTFactorSetReference(ChannelRTFactor * rtfactor,
 
     info = channel->GetInfo(channel);
     if (!info) {
-        mcx_log(LOG_ERROR, "Port: Set rtfactor value reference: Port not set up");
+        mcx_log(LOG_ERROR, "Port: Set RTFactor value reference: Port not set up");
         return RETURN_ERROR;
     }
     if (channel->data->internalValue
         && !(info->defaultValue && channel->data->internalValue == ChannelValueReference(info->defaultValue))) {
-        mcx_log(LOG_ERROR, "Port %s: Set rtfactor value reference: Reference already set", info->GetLogName(info));
+        mcx_log(LOG_ERROR, "Port %s: Set RTFactor value reference: Reference already set", info->GetLogName(info));
         return RETURN_ERROR;
     }
     if (CHANNEL_UNKNOWN != type) {
         if (info->GetType(info) != type) {
-            mcx_log(LOG_ERROR, "Port %s: Set rtfactor value reference: Mismatching types", info->GetLogName(info));
+            mcx_log(LOG_ERROR, "Port %s: Set RTFactor value reference: Mismatching types", info->GetLogName(info));
             return RETURN_ERROR;
         }
     }
