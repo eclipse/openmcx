@@ -1,0 +1,13 @@
+name: OpenMCx build
+on: [push]
+jobs:
+  Build-OpenMCx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout OpenMCx
+        uses: actions/checkout@v2
+      - name: Build OpenMCx
+        uses: ./.github/actions/script-action
+        with:
+          entrypoint: /usr/bin/bash
+          args: ./build.sh
