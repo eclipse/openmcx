@@ -32,6 +32,8 @@ static ConnectionInfo * ConnectionInfoFactoryCreateConnectionInfo(ObjectContaine
     int targetChannel = 0;
     int id = 0;
 
+    int connectionInverted = 0;
+
     int isDecoupled = FALSE;
     InterExtrapolatingType isInterExtrapolating = INTERPOLATING;
 
@@ -112,21 +114,12 @@ static ConnectionInfo * ConnectionInfoFactoryCreateConnectionInfo(ObjectContaine
     }
 
     if (connInput->fromType == ENDPOINT_VECTOR) {
+        mcx_free(strFromChannel);
         strFromChannel = CreateIndexedName(inputFromChannel, connInput->from.vectorEndpoint->startIndex);
         if (!strFromChannel) {
             retVal = RETURN_ERROR;
             goto cleanup;
         }
-    }
-
-    databus = sourceComp->GetDatabus(sourceComp);
-    databusInfo = DatabusGetOutInfo(databus);
-    sourceChannel = DatabusInfoGetChannelID(databusInfo, strFromChannel);
-    if (sourceChannel < 0) {
-        mcx_log(LOG_ERROR, "Connection: Source port %s of element %s does not exist",
-                strFromChannel, sourceComp->GetName(sourceComp));
-        retVal = RETURN_ERROR;
-        goto cleanup;
     }
 
     // target component
@@ -163,6 +156,7 @@ static ConnectionInfo * ConnectionInfoFactoryCreateConnectionInfo(ObjectContaine
     }
 
     if (connInput->toType == ENDPOINT_VECTOR) {
+        mcx_free(strToChannel);
         strToChannel = CreateIndexedName(inputToChannel, connInput->to.vectorEndpoint->startIndex);
         if (!strToChannel) {
             retVal = RETURN_ERROR;
@@ -170,14 +164,58 @@ static ConnectionInfo * ConnectionInfoFactoryCreateConnectionInfo(ObjectContaine
         }
     }
 
+    databus = sourceComp->GetDatabus(sourceComp);
+    databusInfo = DatabusGetOutInfo(databus);
+    sourceChannel = DatabusInfoGetChannelID(databusInfo, strFromChannel);
+    if (sourceChannel < 0) {
+        // the connection might be inverted, see SSP 1.0 specification (section 5.3.2.1, page 47)
+
+        databusInfo = DatabusGetInInfo(databus);
+        sourceChannel = DatabusInfoGetChannelID(databusInfo, strFromChannel);
+
+        if (sourceChannel < 0) {
+            mcx_log(LOG_ERROR, "Connection: Source port %s of element %s does not exist",
+                strFromChannel, sourceComp->GetName(sourceComp));
+            retVal = RETURN_ERROR;
+            goto cleanup;
+        } else {
+            connectionInverted = 1;
+        }
+    }
+
     databus = targetComp->GetDatabus(targetComp);
-    databusInfo = DatabusGetInInfo(databus);
+
+    if (0 == connectionInverted) {
+        databusInfo = DatabusGetInInfo(databus);
+    } else {
+        databusInfo = DatabusGetOutInfo(databus);
+    }
+
     targetChannel = DatabusInfoGetChannelID(databusInfo, strToChannel);
     if (targetChannel < 0) {
-        mcx_log(LOG_ERROR, "Connection: Target port %s of element %s does not exist",
+        if (0 == connectionInverted) {
+            mcx_log(LOG_ERROR, "Connection: Target port %s of element %s does not exist",
                 strToChannel, targetComp->GetName(targetComp));
+        } else {
+            mcx_log(LOG_ERROR, "Connection: Source port %s of element %s does not exist",
+                strToChannel, targetComp->GetName(targetComp));
+        }
         retVal = RETURN_ERROR;
         goto cleanup;
+    }
+
+    if (connectionInverted) {
+        int tmp = sourceChannel;
+        Component * tmpCmp = sourceComp;
+
+        sourceChannel = targetChannel;
+        targetChannel = tmp;
+
+        sourceComp = targetComp;
+        targetComp = tmpCmp;
+
+        mcx_log(LOG_DEBUG, "Connection: Inverted connection (%s, %s) -- (%s, %s)",
+            targetComp->GetName(targetComp), strFromChannel, sourceComp->GetName(sourceComp), strToChannel);
     }
 
     // extrapolation
