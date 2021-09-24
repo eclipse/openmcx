@@ -833,7 +833,7 @@ static McxStatus Fmu2Read(Component * comp, ComponentInput * input, const struct
 
 
     {
-        retVal == Fmu2UpdateTunableParamValues(fmu2->tunableParams, fmu2->params);
+        retVal = Fmu2UpdateTunableParamValues(fmu2->tunableParams, fmu2->params);
         if (retVal == RETURN_ERROR) {
             ComponentLog(comp, LOG_ERROR, "Updating tunable parameter values failed");
             return RETURN_ERROR;
