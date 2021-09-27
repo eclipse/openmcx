@@ -11,3 +11,8 @@ jobs:
         with:
           entrypoint: /usr/bin/bash
           args: ./build.sh
+      - name: Test OpenMCx
+        uses: ./.github/actions/script-action
+        with:
+          entrypoint: /usr/bin/python
+          args: run_tests.py install/openmcx examples
