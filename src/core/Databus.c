@@ -1374,6 +1374,59 @@ static char * DatabusGetUniqueChannelName(Databus * db, const char * name) {
     return uniqueName;
 }
 
+static McxStatus DatabusAddLocalRTFactorChannel(Databus * db,
+                                                ChannelLocal * * * dbDataChannel,
+                                                DatabusInfoData * infoData,
+                                                const char * name,
+                                                const char * id,
+                                                const char * unit,
+                                                const void * reference,
+                                                ChannelType type) {
+    ChannelInfo * chInfo = NULL;
+    ChannelLocal * localrtfactor = NULL;
+    Channel * channel = NULL;
+
+    char * uniqueName = NULL;
+
+    McxStatus retVal = RETURN_OK;
+
+    chInfo = (ChannelInfo *) object_create(ChannelInfo);
+    if (!chInfo) {
+        mcx_log(LOG_ERROR, "Ports: Set local or rtfactor-reference: Create port info failed");
+        return RETURN_ERROR;
+    }
+
+    uniqueName = DatabusGetUniqueChannelName(db, name);
+    chInfo->Init(chInfo, uniqueName, NULL, unit, type, id);
+    mcx_free(uniqueName);
+
+    infoData->infos->PushBack(infoData->infos, (Object *) chInfo);
+
+    localrtfactor = (ChannelLocal *) object_create(ChannelLocal);
+    if (!localrtfactor) {
+        mcx_log(LOG_ERROR, "Ports: Set local or rtfactor-reference: Create port failed");
+        return RETURN_ERROR;
+    }
+
+    channel = (Channel *) localrtfactor;
+    retVal = channel->Setup(channel, chInfo);
+    if (RETURN_OK != retVal) {
+        mcx_log(LOG_ERROR, "Ports: Set local or rtfactor-reference: Could not setup port %s", chInfo->GetName(chInfo));
+        return RETURN_ERROR;
+    }
+
+    localrtfactor->SetReference(localrtfactor, reference, type);
+
+    *dbDataChannel = (ChannelLocal * *) mcx_realloc(*dbDataChannel, infoData->infos->Size(infoData->infos) * sizeof(Channel *));
+    if (!*dbDataChannel) {
+        mcx_log(LOG_ERROR, "Ports: Set local or rtfactor-reference: Memory allocation for ports failed");
+        return RETURN_ERROR;
+    }
+    (*dbDataChannel)[infoData->infos->Size(infoData->infos) - 1] = (ChannelLocal *) channel;
+
+    return RETURN_OK;
+}
+
 McxStatus DatabusAddLocalChannel(Databus * db,
                                  const char * name,
                                  const char * id,
@@ -1382,11 +1435,6 @@ McxStatus DatabusAddLocalChannel(Databus * db,
                                  ChannelType type) {
     DatabusData * dbData = db->data;
     DatabusInfoData * infoData = dbData->localInfo->data;
-    ChannelInfo * chInfo = NULL;
-    ChannelLocal * local = NULL;
-    Channel * channel = NULL;
-
-    char * uniqueName = NULL;
 
     McxStatus retVal = RETURN_OK;
 
@@ -1399,39 +1447,11 @@ McxStatus DatabusAddLocalChannel(Databus * db,
         return RETURN_ERROR;
     }
 
-    chInfo = (ChannelInfo *) object_create(ChannelInfo);
-    if (!chInfo) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Create port info failed");
-        return RETURN_ERROR;
-    }
-
-    uniqueName = DatabusGetUniqueChannelName(db, name);
-    chInfo->Init(chInfo, uniqueName, NULL, unit, type, id);
-    mcx_free(uniqueName);
-
-    infoData->infos->PushBack(infoData->infos, (Object *) chInfo);
-
-    local = (ChannelLocal *) object_create(ChannelLocal);
-    if (!local) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Create port failed");
-        return RETURN_ERROR;
-    }
-
-    channel = (Channel *) local;
-    retVal = channel->Setup(channel, chInfo);
+    retVal = DatabusAddLocalRTFactorChannel(db, &dbData->local, infoData, name, id, unit, reference, type);
     if (RETURN_OK != retVal) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Could not setup port %s", chInfo->GetName(chInfo));
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Setup failed");
         return RETURN_ERROR;
     }
-
-    local->SetReference(local, reference, type);
-
-    dbData->local = (ChannelLocal * *) mcx_realloc(dbData->local, infoData->infos->Size(infoData->infos) * sizeof(Channel *));
-    if (!dbData->local) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Memory allocation for ports failed");
-        return RETURN_ERROR;
-    }
-    dbData->local[infoData->infos->Size(infoData->infos) - 1] = (ChannelLocal *) channel;
 
     return RETURN_OK;
 }
@@ -1444,56 +1464,23 @@ McxStatus DatabusAddRTFactorChannel(Databus * db,
                                     ChannelType type) {
     DatabusData * dbData = db->data;
     DatabusInfoData * infoData = dbData->rtfactorInfo->data;
-    ChannelInfo * chInfo = NULL;
-    ChannelLocal * rtfactor = NULL;
-    Channel * channel = NULL;
-
-    char * uniqueName = NULL;
 
     McxStatus retVal = RETURN_OK;
 
     if (!db) {
-        mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Invalid structure");
+        mcx_log(LOG_ERROR, "Ports: Set RTFactor-reference: Invalid structure");
         return RETURN_ERROR;
     }
     if (!reference) {
-        mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Invalid reference");
+        mcx_log(LOG_ERROR, "Ports: Set RTFactor-reference: Invalid reference");
         return RETURN_ERROR;
     }
 
-    chInfo = (ChannelInfo *) object_create(ChannelInfo);
-    if (!chInfo) {
-        mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Create port info failed");
-        return RETURN_ERROR;
-    }
-
-    uniqueName = DatabusGetUniqueChannelName(db, name);
-    chInfo->Init(chInfo, uniqueName, NULL, unit, type, id);
-    mcx_free(uniqueName);
-
-    infoData->infos->PushBack(infoData->infos, (Object *) chInfo);
-
-    rtfactor = (ChannelLocal *) object_create(ChannelLocal);
-    if (!rtfactor) {
-        mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Create port failed");
-        return RETURN_ERROR;
-    }
-
-    channel = (Channel *) rtfactor;
-    retVal = channel->Setup(channel, chInfo);
+    retVal = DatabusAddLocalRTFactorChannel(db, &dbData->rtfactor, infoData, name, id, unit, reference, type);
     if (RETURN_OK != retVal) {
-        mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Could not setup port %s", chInfo->GetName(chInfo));
+        mcx_log(LOG_ERROR, "Ports: Set RTFactor-reference: Setup failed");
         return RETURN_ERROR;
     }
-
-    rtfactor->SetReference(rtfactor, reference, type);
-
-    dbData->rtfactor = (ChannelLocal * *) mcx_realloc(dbData->rtfactor, infoData->infos->Size(infoData->infos) * sizeof(Channel *));
-    if (!dbData->rtfactor) {
-        mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Memory allocation for ports failed");
-        return RETURN_ERROR;
-    }
-    dbData->rtfactor[infoData->infos->Size(infoData->infos) - 1] = (ChannelLocal *) channel;
 
     return RETURN_OK;
 }
