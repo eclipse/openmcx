@@ -978,95 +978,10 @@ static ChannelLocal * ChannelLocalCreate(ChannelLocal * local) {
     return local;
 }
 
-// ----------------------------------------------------------------------
-// ChannelRTFactor
-
-static void ChannelRTFactorDataDestructor(ChannelRTFactorData * data) {
-}
-
-static ChannelRTFactorData * ChannelRTFactorDataCreate(ChannelRTFactorData * data) {
-    return data;
-}
-
-OBJECT_CLASS(ChannelRTFactorData, Object);
-
-static McxStatus ChannelRTFactorSetup(ChannelRTFactor * rtfactor, ChannelInfo * info) {
-    Channel * channel = (Channel *) rtfactor;
-
-    return channel->Setup(channel, info);
-}
-
-static const void * ChannelRTFactorGetValueReference(Channel * channel) {
-    return channel->data->internalValue;
-}
-
-static McxStatus ChannelRTFactorUpdate(Channel * channel, TimeInterval * time) {
-    return RETURN_OK;
-}
-
-static int ChannelRTFactorIsValid(Channel * channel) {
-    return (channel->data->internalValue != NULL);
-}
-
-// TODO: Unify with ChannelOutsetReference (similar code)
-static McxStatus ChannelRTFactorSetReference(ChannelRTFactor * rtfactor,
-                                            const void * reference,
-                                            ChannelType type) {
-    Channel * channel = (Channel *) rtfactor;
-    ChannelInfo * info = NULL;
-
-    info = channel->GetInfo(channel);
-    if (!info) {
-        mcx_log(LOG_ERROR, "Port: Set RTFactor value reference: Port not set up");
-        return RETURN_ERROR;
-    }
-    if (channel->data->internalValue
-        && !(info->defaultValue && channel->data->internalValue == ChannelValueReference(info->defaultValue))) {
-        mcx_log(LOG_ERROR, "Port %s: Set RTFactor value reference: Reference already set", info->GetLogName(info));
-        return RETURN_ERROR;
-    }
-    if (CHANNEL_UNKNOWN != type) {
-        if (info->GetType(info) != type) {
-            mcx_log(LOG_ERROR, "Port %s: Set RTFactor value reference: Mismatching types", info->GetLogName(info));
-            return RETURN_ERROR;
-        }
-    }
-
-    channel->data->internalValue = reference;
-
-    return RETURN_OK;
-}
-
-static void ChannelRTFactorDestructor(ChannelRTFactor * rtfactor) {
-    object_destroy(rtfactor->data);
-}
-
-static ChannelRTFactor * ChannelRTFactorCreate(ChannelRTFactor * rtfactor) {
-    Channel * channel = (Channel *) rtfactor;
-
-    rtfactor->data = (ChannelRTFactorData *) object_create(ChannelRTFactorData);
-    if (!rtfactor->data) {
-        return NULL;
-    }
-
-    // virtual functions
-    channel->GetValueReference = ChannelRTFactorGetValueReference;
-    channel->Update            = ChannelRTFactorUpdate;
-    channel->IsValid           = ChannelRTFactorIsValid;
-
-    channel->IsConnected       = ChannelRTFactorIsValid;
-
-    rtfactor->Setup        = ChannelRTFactorSetup;
-    rtfactor->SetReference = ChannelRTFactorSetReference;
-
-    return rtfactor;
-}
-
 OBJECT_CLASS(Channel, Object);
 OBJECT_CLASS(ChannelIn, Channel);
 OBJECT_CLASS(ChannelOut, Channel);
 OBJECT_CLASS(ChannelLocal, Channel);
-OBJECT_CLASS(ChannelRTFactor, Channel);
 
 #ifdef __cplusplus
 } /* closing brace for extern "C" */

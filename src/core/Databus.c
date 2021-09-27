@@ -553,7 +553,7 @@ static void DatabusDataDestructor(DatabusData * data) {
         if (data->rtfactor) {
             size_t num = DatabusInfoGetChannelNum(data->rtfactorInfo);
             for (i = 0; i < num; i++) {
-                ChannelRTFactor * rtfactor = data->rtfactor[i];
+                ChannelLocal * rtfactor = data->rtfactor[i];
                 if (rtfactor) {
                     object_destroy(rtfactor);
                 }
@@ -1445,7 +1445,7 @@ McxStatus DatabusAddRTFactorChannel(Databus * db,
     DatabusData * dbData = db->data;
     DatabusInfoData * infoData = dbData->rtfactorInfo->data;
     ChannelInfo * chInfo = NULL;
-    ChannelRTFactor * rtfactor = NULL;
+    ChannelLocal * rtfactor = NULL;
     Channel * channel = NULL;
 
     char * uniqueName = NULL;
@@ -1473,7 +1473,7 @@ McxStatus DatabusAddRTFactorChannel(Databus * db,
 
     infoData->infos->PushBack(infoData->infos, (Object *) chInfo);
 
-    rtfactor = (ChannelRTFactor *) object_create(ChannelRTFactor);
+    rtfactor = (ChannelLocal *) object_create(ChannelLocal);
     if (!rtfactor) {
         mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Create port failed");
         return RETURN_ERROR;
@@ -1488,12 +1488,12 @@ McxStatus DatabusAddRTFactorChannel(Databus * db,
 
     rtfactor->SetReference(rtfactor, reference, type);
 
-    dbData->rtfactor = (ChannelRTFactor * *) mcx_realloc(dbData->rtfactor, infoData->infos->Size(infoData->infos) * sizeof(Channel *));
+    dbData->rtfactor = (ChannelLocal * *) mcx_realloc(dbData->rtfactor, infoData->infos->Size(infoData->infos) * sizeof(Channel *));
     if (!dbData->rtfactor) {
         mcx_log(LOG_ERROR, "Ports: Set rtfactor-reference: Memory allocation for ports failed");
         return RETURN_ERROR;
     }
-    dbData->rtfactor[infoData->infos->Size(infoData->infos) - 1] = (ChannelRTFactor *) channel;
+    dbData->rtfactor[infoData->infos->Size(infoData->infos) - 1] = (ChannelLocal *) channel;
 
     return RETURN_OK;
 }

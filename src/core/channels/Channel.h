@@ -277,41 +277,6 @@ struct ChannelLocal {
     struct ChannelLocalData * data;
 };
 
-// ----------------------------------------------------------------------
-// ChannelRTFactor
-typedef struct ChannelRTFactor ChannelRTFactor;
-
-typedef McxStatus (* fChannelRTFactorSetup)(ChannelRTFactor * local, struct ChannelRTFactor * info);
-
-typedef McxStatus (* fChannelRTFactorSetReference) (ChannelRTFactor * local,
-                                                    const void * reference,
-                                                    ChannelType  type);
-
-extern const struct ObjectClass _ChannelRTFactor;
-
-struct ChannelRTFactor {
-    Channel _; // base class
-
-    /**
-     * The type of the channel cannot be CHANNEL_UNKNOWN.
-     */
-    fChannelRTFactorSetup Setup;
-
-    /**
-     * Returns true if and only if a reference has been registered with the
-     * local channel.
-     */
-    // Channel::IsValid
-
-    /**
-     * Connect the local channel to the internal value of the component. The specified
-     * type has to match the type of the channel.
-     */
-    fChannelRTFactorSetReference SetReference;
-
-    struct ChannelRTFactorData * data;
-};
-
 #ifdef __cplusplus
 } /* closing brace for extern "C" */
 #endif /* __cplusplus */

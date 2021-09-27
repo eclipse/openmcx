@@ -53,7 +53,7 @@ typedef struct DatabusData {
     struct ChannelIn ** in;   /**< input channels */
     struct ChannelOut ** out; /**< output channels */
     struct ChannelLocal ** local; /**< local (non-connectable) channels */
-    struct ChannelRTFactor ** rtfactor; /**< rtfactor (non-connectable) channels */
+    struct ChannelLocal ** rtfactor; /**< rtfactor (non-connectable) channels */
 
     struct DatabusInfo * inInfo;  /**< metadata (size, properties) for \a in */
     struct DatabusInfo * outInfo; /**< metadata (size, properties) for \a out */

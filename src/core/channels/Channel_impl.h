@@ -108,15 +108,6 @@ typedef struct ChannelLocalData {
 
 } ChannelLocalData;
 
-// ----------------------------------------------------------------------
-// ChannelRTFactor
-
-// object that represents real time factor channels for storage
-typedef struct ChannelRTFactorData {
-    Object _; // base class
-
-} ChannelRTFactorData;
-
 #ifdef __cplusplus
 } /* closing brace for extern "C" */
 #endif /* __cplusplus */
