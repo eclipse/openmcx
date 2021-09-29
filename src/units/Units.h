@@ -13,6 +13,10 @@
 
 #include "CentralParts.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /**
  * This is the structure object describing the SI definition of an unit.
  * It should be used in combination with @a mcx_units_get_si_def.
@@ -63,5 +67,9 @@ int mcx_units_add_si_def(const char * name, si_def * si_unit_def);
            2 if @a id is a valid unit identifier but the unit is an empirical one.
  */
 int mcx_units_get_si_def(const char * id, si_def * si_def_container);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif /* MCX_UNITS_UNITS_H */

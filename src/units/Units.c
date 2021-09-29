@@ -13,6 +13,10 @@
 #include "util/os.h"
 #include "util/string.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 static size_t si_def_map_alloc = 0;
 static size_t si_def_map_num = 0;
 static si_def_map_element * si_def_map = NULL;
@@ -354,3 +358,7 @@ int mcx_units_add_si_def(const char * name, si_def * si_unit_def) {
 
     return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
