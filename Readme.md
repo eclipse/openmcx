@@ -1,6 +1,8 @@
 ![OpenMCx](open_mcx_logo.png "OpenMCx")
 =======================================
 
+![OpenMCx build](https://github.com/eclipse/openmcx/actions/workflows/openmcx-build.yml/badge.svg)
+
 OpenMCx is an extendable, tool-neutral co-simulation framework based on [Modelica](https://www.modelica.org/)
 standards with the goal of supporting advanced simulation applications with a heterogenous toolchain
 in a distributed collaborative development process. It provides a flexible way of combining simulation
