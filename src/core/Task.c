@@ -100,10 +100,8 @@ static McxStatus TaskPrepareRun(Task * task, Model * model) {
     return RETURN_OK;
 }
 
-static McxStatus TaskRun(Task * task, Model * model) {
+static McxStatus TaskInitialize(Task * task, Model * model) {
     McxStatus retVal = RETURN_OK;
-    McxStatus status = RETURN_OK;
-    double preferredTimeStep = 0.;
 
     SubModel * subModel = model->subModel;
     StepTypeParams * stepParams = task->params;
@@ -126,6 +124,17 @@ static McxStatus TaskRun(Task * task, Model * model) {
     task->storage->StoreModelLocal(task->storage, model->subModel, stepParams->time, STORE_SYNCHRONIZATION);
 
     task->stepType->Configure(task->stepType, stepParams, subModel);
+
+    return RETURN_OK;
+}
+
+static McxStatus TaskRun(Task * task, Model * model) {
+    McxStatus retVal = RETURN_OK;
+    McxStatus status = RETURN_OK;
+    double preferredTimeStep = 0.;
+
+    SubModel * subModel = model->subModel;
+    StepTypeParams * stepParams = task->params;
 
     // for sumTime mode
     stepParams->timeEndStep = task->timeStart;
@@ -342,6 +351,7 @@ static Task * TaskCreate(Task * task) {
     task->Read = TaskRead;
     task->Setup = TaskSetup;
     task->PrepareRun = TaskPrepareRun;
+    task->Initialize = TaskInitialize;
     task->Run = TaskRun;
 
     task->SetConfig = TaskSetConfig;

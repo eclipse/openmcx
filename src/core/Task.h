@@ -48,8 +48,8 @@ struct Task {
     fTaskRead Read;
     fTaskSetup Setup;
     fTaskRun PrepareRun;
+    fTaskRun Initialize;
     fTaskRun Run;
-
     fTaskSetConfig SetConfig;
     fTaskGetStepTypeType GetStepTypeType;
 

@@ -283,6 +283,7 @@ McxStatus RunMCX(int argc, char *argv[]) {
     McxTime clock_setup_begin, clock_setup_end;
     McxTime clock_sim_begin, clock_sim_end;
     McxTime clock_cleanup_begin, clock_cleanup_end;
+    McxTime clock_init_begin, clock_init_end;
     double cpu_time_sec;
     McxTime cpu_time_used;
 
@@ -291,6 +292,7 @@ McxStatus RunMCX(int argc, char *argv[]) {
     McxTime time_setup_begin, time_setup_end;
     McxTime time_sim_begin, time_sim_end;
     McxTime time_cleanup_begin, time_cleanup_end;
+    McxTime time_init_begin, time_init_end;
     McxTime time_diff;
 
     double wall_time_sec;
@@ -445,6 +447,31 @@ McxStatus RunMCX(int argc, char *argv[]) {
 
     mcx_log(LOG_INFO, "******************** Used CPU-Time:  %fs ***********************", cpu_time_sec);
     mcx_time_diff(&time_setup_begin, &time_setup_end, &time_diff);
+    wall_time_sec = mcx_time_to_seconds(&time_diff);
+    mcx_log(LOG_INFO, "******************** Used Wall-Time: %fs ***********************", wall_time_sec);
+    mcx_log(LOG_INFO, " ");
+    mcx_log(LOG_INFO, " ");
+
+    mcx_log(LOG_INFO, "******************** Initialization: *********************************");
+    mcx_log(LOG_INFO, " ");
+    mcx_cpu_time_get(&clock_init_begin);
+    mcx_time_get(&time_init_begin);
+
+    retVal = task->Initialize(task, model);
+    if (RETURN_OK != retVal) {
+        retVal = RETURN_ERROR;
+        goto cleanup;
+    }
+
+    mcx_cpu_time_get(&clock_init_end);
+    mcx_time_get(&time_init_end);
+    mcx_log(LOG_INFO, "******************** Initialization done. ****************************");
+    mcx_time_diff(&clock_init_begin, &clock_init_end, &cpu_time_used);
+    cpu_time_sec = mcx_time_to_seconds(&cpu_time_used);
+
+    mcx_log(LOG_INFO, "******************** Used CPU-Time:  %fs ***********************", cpu_time_sec);
+
+    mcx_time_diff(&time_init_begin, &time_init_end, &time_diff);
     wall_time_sec = mcx_time_to_seconds(&time_diff);
     mcx_log(LOG_INFO, "******************** Used Wall-Time: %fs ***********************", wall_time_sec);
     mcx_log(LOG_INFO, " ");
