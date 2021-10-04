@@ -1,0 +1,5 @@
+name: 'OpenMCx script action'
+description: 'Run script'
+runs:
+  using: 'docker'
+  image: '../../../docker/Dockerfile'

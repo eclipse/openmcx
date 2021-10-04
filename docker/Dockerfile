@@ -13,6 +13,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -y cmake git && \
     apt-get install -y build-essential && \
-    apt-get install -y python-is-python3 && \
+    apt-get install -y python-is-python3 python3-numpy && \
     apt-get install -y libxml2-dev zlib1g-dev && \
     rm -rf /var/lib/apt/lists/*
