@@ -299,6 +299,19 @@ int mcx_units_get_si_def(const char * name, si_def * si_unit_def) {
     }
 }
 
+int mcx_units_si_def_is_equal(si_def const * const si1, si_def const * const si2) {
+    return (si1->kg == si2->kg &&
+        si1->m == si2->m &&
+        si1->s == si2->s &&
+        si1->A == si2->A &&
+        si1->K == si2->K &&
+        si1->mol == si2->mol &&
+        si1->cd == si2->cd &&
+        si1->rad == si2->rad &&
+        si1->factor == si2->factor &&
+        si1->offset == si2->offset);
+}
+
 int mcx_units_add_si_def(const char * name, si_def * si_unit_def) {
     si_def_map_element * element = NULL;
 
@@ -309,6 +322,9 @@ int mcx_units_add_si_def(const char * name, si_def * si_unit_def) {
     element = si_def_map_get(si_def_map, name);
 
     if (element) {
+        if (mcx_units_si_def_is_equal(&(element->si_definition), si_unit_def)) {
+            return 0;
+        }
         return 1;
     }
 
