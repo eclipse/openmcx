@@ -546,14 +546,30 @@ static McxStatus CollectParameterValues(xmlNodePtr paramBindingsNode, ObjectCont
                 parameter = (SSDParameter*)parameters->GetByName(parameters, paramValue->baseName);
 
                 if (!parameter) {
-                    retVal = xml_warning_generic(paramNode, "No parameter connector %s (%s) found", paramValue->name, paramValue->baseName);
-                    goto cleanup_2;
-                }
+                    // create a new parameter here
+                    parameter = (SSDParameter *)object_create(SSDParameter);
+                    if (!parameter) {
+                        retVal = RETURN_ERROR;
+                        goto cleanup_2;
+                    }
 
-                if (!parameter->isArray) {
-                    retVal = xml_warning_generic(paramNode, "No matching connector found for parameter %s "
-                                                 "(connector %s is not defined as an array)", paramValue->name, parameter->name);
-                    goto cleanup_2;
+                    parameter->name = mcx_string_copy(paramValue->name);
+                    parameter->isArray = FALSE;
+
+                    if (paramValue->unit) {
+                        parameter->connectorUnit = (SSDUnit*)units->GetByName(units, paramValue->unit->name);
+                        if (!parameter->connectorUnit) {
+                            retVal = xml_error_generic(paramNode, "Referenced unit %s is not defined", paramValue->unit);
+                            goto cleanup_2;
+                        }
+                    }
+
+                    parameter->connectorNode = paramNode; // duck typing: used attributes for both nodes are the same
+
+                    retVal = parameters->PushBackNamed(parameters, (Object *)parameter, parameter->name);
+                    if (retVal == RETURN_ERROR) {
+                        goto cleanup_2;
+                    }
                 }
 
                 if (!SSDCompatibleTypes(parameter, paramValue)) {
@@ -1178,12 +1194,7 @@ McxStatus SSDReadParameters(ComponentInput * componentInput,
             goto cleanup;
         }
 
-        if (SetParameters && parameters->Size(parameters) > 0) {
-            if (!paramBindingsNode) {
-                retVal = xml_error_generic(connectorsNode, "No parameter values defined at the component level");
-                goto cleanup;
-            }
-
+        if (SetParameters && paramBindingsNode) {
             // collect parameter values
             retVal = CollectParameterValues(paramBindingsNode, parameters);
             if (retVal == RETURN_ERROR) {
