@@ -16,7 +16,6 @@ OpenMCx introduces a few limitations on the SSP standard used for defining input
 - Parameter value resolution based on hierarchical names is not supported
     - Only `ParameterBindings` at the element level are taken into account
 - `ParameterValues` __MUST__ be provided inline and not via an `.ssv` file
-- Parameter values are applied __ONLY TO__ parameter connectors defined in the system description
 - `ParameterMappings` are not supported
 - Parameter connections and connections between system connectors are not supported
 - `UnitConversionSuppression` is not supported
