@@ -178,6 +178,7 @@ static McxStatus ComponentStorageSetup(ComponentStorage * compStore, ResultsStor
         numberOfPorts[CHANNEL_STORE_IN] = comp->GetNumWriteInChannels(comp);
         numberOfPorts[CHANNEL_STORE_OUT] = comp->GetNumWriteOutChannels(comp);
         numberOfPorts[CHANNEL_STORE_LOCAL] = comp->GetNumWriteLocalChannels(comp);
+        numberOfPorts[CHANNEL_STORE_RTFACTOR] = comp->GetNumWriteRTFactorChannels(comp);
 
         for (i = 0; i < CHANNEL_STORE_NUM; i++) {
             if (compStore->storage->channelStoreEnabled[i] && (numberOfPorts[i] > 0)) {

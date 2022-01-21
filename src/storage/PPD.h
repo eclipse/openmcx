@@ -59,7 +59,7 @@ typedef McxStatus (* fPpdFolderSetup)(PpdFolder * folder, const char * id, const
 typedef McxStatus (* fPpdFolderSetType)(PpdFolder * folder, PpdType type);
 typedef McxStatus (* fPpdFolderSetIcon)(PpdFolder * folder, PpdIcon icon);
 typedef McxStatus (* fPpdFolderAddElement)(PpdFolder * folder, PpdElement * element);
-typedef PpdFolder * (* fPpdFolderInsertComponent)(PpdFolder * folder, const char * linkType, const char * compName, const char * fileNameOut, const char * fileNameIn, const char * fileNameLocal);
+typedef PpdFolder * (* fPpdFolderInsertComponent)(PpdFolder * folder, const char * linkType, const char * compName, const char * fileNameOut, const char * fileNameIn, const char * fileNameLocal, const char * fileNameRTFactor);
 typedef PpdElement * (* fPpdFolderGetElementByName)(PpdFolder * folder, const char * name);
 typedef char * (* fPpdFolderEncodeNameString)(PpdFolder * folder, const char * str);
 

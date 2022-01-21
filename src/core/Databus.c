@@ -550,9 +550,21 @@ static void DatabusDataDestructor(DatabusData * data) {
             mcx_free(data->local);
         }
 
+        if (data->rtfactor) {
+            size_t num = DatabusInfoGetChannelNum(data->rtfactorInfo);
+            for (i = 0; i < num; i++) {
+                ChannelLocal * rtfactor = data->rtfactor[i];
+                if (rtfactor) {
+                    object_destroy(rtfactor);
+                }
+            }
+            mcx_free(data->rtfactor);
+        }
+
         object_destroy(data->inInfo);
         object_destroy(data->outInfo);
         object_destroy(data->localInfo);
+        object_destroy(data->rtfactorInfo);
     }
 }
 
@@ -560,6 +572,7 @@ static DatabusData * DatabusDataCreate(DatabusData * data) {
     data->in = NULL;
     data->out = NULL;
     data->local = NULL;
+    data->rtfactor = NULL;
 
     data->inInfo = (DatabusInfo *) object_create(DatabusInfo);
     if (!data->inInfo) {
@@ -573,6 +586,11 @@ static DatabusData * DatabusDataCreate(DatabusData * data) {
 
     data->localInfo = (DatabusInfo *) object_create(DatabusInfo);
     if (!data->localInfo) {
+        return NULL;
+    }
+
+    data->rtfactorInfo = (DatabusInfo *) object_create(DatabusInfo);
+    if (!data->rtfactorInfo) {
         return NULL;
     }
 
@@ -802,6 +820,16 @@ DatabusInfo * DatabusGetLocalInfo(Databus * db) {
     return db->data->localInfo;
 }
 
+// Only returns NULL if db was NULL
+DatabusInfo * DatabusGetRTFactorInfo(Databus * db) {
+    if (!db) {
+        mcx_log(LOG_ERROR, "Ports: Get internal port info: Invalid structure");
+        return NULL;
+    }
+
+    return db->data->rtfactorInfo;
+}
+
 // Only returns SIZE_T_ERROR if info was NULL
 size_t DatabusInfoGetChannelNum(DatabusInfo * info) {
     if (!info) {
@@ -914,6 +942,27 @@ Channel * DatabusGetLocalChannel(Databus * db, size_t i) {
     return (Channel *) db->data->local[i];
 }
 
+Channel * DatabusGetRTFactorChannel(Databus * db, size_t i) {
+    DatabusInfo * info = NULL;
+
+    if (!db->data->rtfactor) {
+        mcx_log(LOG_ERROR, "Ports: Get rtfactor variable: No ports");
+        return NULL;
+    }
+
+    info = db->data->rtfactorInfo;
+    if (!info) {
+        mcx_log(LOG_ERROR, "Ports: Get rtfactor variable: No port info");
+        return NULL;
+    }
+    if (i >= DatabusInfoGetChannelNum(info)) {
+        mcx_log(LOG_ERROR, "Ports: Get rtfactor variable: Unknown port %d", i);
+        return NULL;
+    }
+
+    return (Channel *) db->data->rtfactor[i];
+}
+
 // Only returns SIZE_T_ERROR if db was NULL
 size_t DatabusGetOutChannelsNum(Databus * db) {
     if (!db) {
@@ -962,6 +1011,16 @@ size_t DatabusGetLocalChannelsNum(Databus * db) {
     }
 
     return DatabusInfoGetChannelNum(DatabusGetLocalInfo(db));
+}
+
+// Only returns SIZE_T_ERROR if db was NULL
+size_t DatabusGetRTFactorChannelsNum(Databus * db) {
+    if (!db) {
+        mcx_log(LOG_ERROR, "Ports: Get rtfactor variable number: Invalid structure");
+        return SIZE_T_ERROR;
+    }
+
+    return DatabusInfoGetChannelNum(DatabusGetRTFactorInfo(db));
 }
 
 
@@ -1296,6 +1355,7 @@ static char * DatabusGetUniqueChannelName(Databus * db, const char * name) {
     ObjectContainer * inInfos = db->data->inInfo->data->infos;
     ObjectContainer * outInfos = db->data->outInfo->data->infos;
     ObjectContainer * localInfos = db->data->localInfo->data->infos;
+    ObjectContainer * rtfactorInfos = db->data->rtfactorInfo->data->infos;
 
     /* Make name unique by adding " %d" suffix */
     uniqueName = (char *) mcx_calloc(strlen(name) + SUFFIX_LEN + 1, sizeof(char));
@@ -1314,6 +1374,71 @@ static char * DatabusGetUniqueChannelName(Databus * db, const char * name) {
     return uniqueName;
 }
 
+static McxStatus DatabusAddLocalChannelInternal(Databus * db,
+                                                ChannelLocal * * * dbDataChannel,
+                                                DatabusInfoData * infoData,
+                                                const char * name,
+                                                const char * id,
+                                                const char * unit,
+                                                const void * reference,
+                                                ChannelType type) {
+    ChannelInfo * chInfo = NULL;
+    ChannelLocal * local = NULL;
+    Channel * channel = NULL;
+
+    char * uniqueName = NULL;
+
+    McxStatus retVal = RETURN_OK;
+
+    chInfo = (ChannelInfo *) object_create(ChannelInfo);
+    if (!chInfo) {
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Create port info for %s failed", name);
+        return RETURN_ERROR;
+    }
+
+    uniqueName = DatabusGetUniqueChannelName(db, name);
+    retVal = chInfo->Init(chInfo, uniqueName, NULL, unit, type, id);
+    if (RETURN_OK != retVal) {
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Initializing ChannelInfo for %s failed", chInfo->GetName(chInfo));
+        return RETURN_ERROR;
+    }
+    mcx_free(uniqueName);
+
+    retVal = infoData->infos->PushBack(infoData->infos, (Object *) chInfo);
+    if (RETURN_OK != retVal) {
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Storing ChannelInfo for %s failed", chInfo->GetName(chInfo));
+        return RETURN_ERROR;
+    }
+
+    local = (ChannelLocal *) object_create(ChannelLocal);
+    if (!local) {
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Create port %s failed", chInfo->GetName(chInfo));
+        return RETURN_ERROR;
+    }
+
+    channel = (Channel *) local;
+    retVal = channel->Setup(channel, chInfo);
+    if (RETURN_OK != retVal) {
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Could not setup port %s", chInfo->GetName(chInfo));
+        return RETURN_ERROR;
+    }
+
+    retVal = local->SetReference(local, reference, type);
+    if (RETURN_OK != retVal) {
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Setting reference to %s failed", chInfo->GetName(chInfo));
+        return RETURN_ERROR;
+    }
+
+    *dbDataChannel = (ChannelLocal * *) mcx_realloc(*dbDataChannel, infoData->infos->Size(infoData->infos) * sizeof(Channel *));
+    if (!*dbDataChannel) {
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Memory reallocation for adding %s to ports failed", chInfo->GetName(chInfo));
+        return RETURN_ERROR;
+    }
+    (*dbDataChannel)[infoData->infos->Size(infoData->infos) - 1] = (ChannelLocal *) channel;
+
+    return RETURN_OK;
+}
+
 McxStatus DatabusAddLocalChannel(Databus * db,
                                  const char * name,
                                  const char * id,
@@ -1322,11 +1447,6 @@ McxStatus DatabusAddLocalChannel(Databus * db,
                                  ChannelType type) {
     DatabusData * dbData = db->data;
     DatabusInfoData * infoData = dbData->localInfo->data;
-    ChannelInfo * chInfo = NULL;
-    ChannelLocal * local = NULL;
-    Channel * channel = NULL;
-
-    char * uniqueName = NULL;
 
     McxStatus retVal = RETURN_OK;
 
@@ -1339,39 +1459,40 @@ McxStatus DatabusAddLocalChannel(Databus * db,
         return RETURN_ERROR;
     }
 
-    chInfo = (ChannelInfo *) object_create(ChannelInfo);
-    if (!chInfo) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Create port info failed");
-        return RETURN_ERROR;
-    }
-
-    uniqueName = DatabusGetUniqueChannelName(db, name);
-    chInfo->Init(chInfo, uniqueName, NULL, unit, type, id);
-    mcx_free(uniqueName);
-
-    infoData->infos->PushBack(infoData->infos, (Object *) chInfo);
-
-    local = (ChannelLocal *) object_create(ChannelLocal);
-    if (!local) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Create port failed");
-        return RETURN_ERROR;
-    }
-
-    channel = (Channel *) local;
-    retVal = channel->Setup(channel, chInfo);
+    retVal = DatabusAddLocalChannelInternal(db, &dbData->local, infoData, name, id, unit, reference, type);
     if (RETURN_OK != retVal) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Could not setup port %s", chInfo->GetName(chInfo));
+        mcx_log(LOG_ERROR, "Ports: Set local-reference: Setup failed");
         return RETURN_ERROR;
     }
 
-    local->SetReference(local, reference, type);
+    return RETURN_OK;
+}
 
-    dbData->local = (ChannelLocal * *) mcx_realloc(dbData->local, infoData->infos->Size(infoData->infos) * sizeof(Channel *));
-    if (!dbData->local) {
-        mcx_log(LOG_ERROR, "Ports: Set local-reference: Memory allocation for ports failed");
+McxStatus DatabusAddRTFactorChannel(Databus * db,
+                                    const char * name,
+                                    const char * id,
+                                    const char * unit,
+                                    const void * reference,
+                                    ChannelType type) {
+    DatabusData * dbData = db->data;
+    DatabusInfoData * infoData = dbData->rtfactorInfo->data;
+
+    McxStatus retVal = RETURN_OK;
+
+    if (!db) {
+        mcx_log(LOG_ERROR, "Ports: Set RTFactor-reference: Invalid structure");
         return RETURN_ERROR;
     }
-    dbData->local[infoData->infos->Size(infoData->infos) - 1] = (ChannelLocal *) channel;
+    if (!reference) {
+        mcx_log(LOG_ERROR, "Ports: Set RTFactor-reference: Invalid reference");
+        return RETURN_ERROR;
+    }
+
+    retVal = DatabusAddLocalChannelInternal(db, &dbData->rtfactor, infoData, name, id, unit, reference, type);
+    if (RETURN_OK != retVal) {
+        mcx_log(LOG_ERROR, "Ports: Set RTFactor-reference: Setup failed");
+        return RETURN_ERROR;
+    }
 
     return RETURN_OK;
 }
@@ -1438,6 +1559,17 @@ ChannelInfo * DatabusGetLocalChannelInfo(Databus * db, size_t channel) {
 
     if (channel >= data->infos->Size(data->infos)) {
         mcx_log(LOG_ERROR, "Ports: Get local-info: Unknown port %d", channel);
+        return NULL;
+    }
+
+    return (ChannelInfo *) data->infos->At(data->infos, channel);
+}
+
+ChannelInfo * DatabusGetRTFactorChannelInfo(Databus * db, size_t channel) {
+    DatabusInfoData * data = db->data->rtfactorInfo->data;
+
+    if (channel >= data->infos->Size(data->infos)) {
+        mcx_log(LOG_ERROR, "Ports: Get rtfactor-info: Unknown port %d", channel);
         return NULL;
     }
 
@@ -1526,6 +1658,21 @@ int DatabusChannelLocalIsValid(Databus * db, size_t channel) {
     }
 
     return local->IsValid(local);
+}
+
+int DatabusChannelRTFactorIsValid(Databus * db, size_t channel) {
+    Channel * rtfactor = NULL;
+
+    if (!db) {
+        return FALSE;
+    }
+
+    rtfactor = (Channel *) DatabusGetRTFactorChannel(db, channel);
+    if (!rtfactor) {
+        return FALSE;
+    }
+
+    return rtfactor->IsValid(rtfactor);
 }
 
 McxStatus DatabusEnterCouplingStepMode(Databus * db, double timeStepSize) {

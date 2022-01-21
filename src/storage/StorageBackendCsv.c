@@ -72,13 +72,15 @@ static McxStatus WritePPDFileCsv(StorageBackend * backend) {
         TextFile * outFile = &(textComponent->files[CHANNEL_STORE_OUT]);
         TextFile * inFile  = &(textComponent->files[CHANNEL_STORE_IN]);
         TextFile * localFile  = &(textComponent->files[CHANNEL_STORE_LOCAL]);
+        TextFile * rtfactorFile = &(textComponent->files[CHANNEL_STORE_RTFACTOR]);
 
         /*
          * out/inFile->name do not include directory, add "./"
          */
-        char * outPath   = outFile->name   ? LocalPath(outFile->name)   : NULL;
-        char * inPath    = inFile->name    ? LocalPath(inFile->name)    : NULL;
-        char * localPath = localFile->name ? LocalPath(localFile->name) : NULL;
+        char * outPath      = outFile->name      ? LocalPath(outFile->name)      : NULL;
+        char * inPath       = inFile->name       ? LocalPath(inFile->name)       : NULL;
+        char * localPath    = localFile->name    ? LocalPath(localFile->name)    : NULL;
+        char * rtfactorPath = rtfactorFile->name ? LocalPath(rtfactorFile->name) : NULL;
 
         PpdFolder * folder = (PpdFolder *) root;
 
@@ -87,7 +89,8 @@ static McxStatus WritePPDFileCsv(StorageBackend * backend) {
 
         if ((outFile->name && !outPath)
             || (inFile->name && !inPath)
-            || (localFile->name && !localPath)) {
+            || (localFile->name && !localPath)
+            || (rtfactorFile->name && !rtfactorPath)) {
             mcx_log(LOG_ERROR, "Results: Could not setup directory file");
             return RETURN_ERROR;
         }
@@ -98,7 +101,8 @@ static McxStatus WritePPDFileCsv(StorageBackend * backend) {
             compName,
             outPath,
             inPath,
-            localPath);
+            localPath,
+            rtfactorPath);
         if (!compFolder) {
             mcx_log(LOG_ERROR, "Results: Could not add directory file");
             return RETURN_ERROR;
@@ -121,6 +125,9 @@ static McxStatus WritePPDFileCsv(StorageBackend * backend) {
         mcx_free(inPath);
         if (localPath) {
             mcx_free(localPath);
+        }
+        if (rtfactorPath) {
+            mcx_free(rtfactorPath);
         }
     }
 
@@ -202,6 +209,7 @@ static McxStatus SetupComponentFilesCsv(StorageBackend * backend) {
         numberOfPorts[CHANNEL_STORE_IN] = comp->GetNumWriteInChannels(comp);
         numberOfPorts[CHANNEL_STORE_OUT] = comp->GetNumWriteOutChannels(comp);
         numberOfPorts[CHANNEL_STORE_LOCAL] = comp->GetNumWriteLocalChannels(comp);
+        numberOfPorts[CHANNEL_STORE_RTFACTOR] = comp->GetNumWriteRTFactorChannels(comp);
 
         for (j = 0; j < CHANNEL_STORE_NUM; j++) {
             TextFile * textFile = &(textComponent->files[j]);

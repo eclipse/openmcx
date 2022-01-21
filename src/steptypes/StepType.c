@@ -144,6 +144,11 @@ McxStatus ComponentDoCommunicationStep(Component * comp, size_t group, StepTypeP
             mcx_log(LOG_ERROR, "%s: Storing internal variables failed", comp->GetName(comp));
             return RETURN_ERROR;
         }
+        retVal = comp->Store(comp, CHANNEL_STORE_RTFACTOR, comp->GetTime(comp), level);
+        if (RETURN_ERROR == retVal) {
+            mcx_log(LOG_ERROR, "%s: Storing real time factors failed", comp->GetName(comp));
+            return RETURN_ERROR;
+        }
     }
 
     if (comp->GetFinishState(comp) == COMP_IS_FINISHED) {

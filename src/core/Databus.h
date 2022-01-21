@@ -71,6 +71,12 @@ size_t DatabusGetInChannelsNum(struct Databus * db);
 size_t DatabusGetLocalChannelsNum(struct Databus * db);
 
 /**
+ * \return The number of rtfactor channels of \a db or -1 if \a db is not initialized
+ * correctly.
+ */
+size_t DatabusGetRTFactorChannelsNum(struct Databus * db);
+
+/**
  * Connects the variable of type \a type at \a reference to the out channel \a channel
  * in \a db. The value at \a reference will be copied to all connected channels at each
  * communication step.
@@ -106,6 +112,16 @@ McxStatus DatabusAddLocalChannel(Databus * db,
                                  const char * unit,
                                  const void * reference,
                                  ChannelType type);
+
+/**
+ * Adds a rtfactor channel of type \a type at \a reference to the databus \a db.
+ */
+McxStatus DatabusAddRTFactorChannel(Databus * db,
+                                   const char * name,
+                                   const char * id,
+                                   const char * unit,
+                                   const void * reference,
+                                   ChannelType type);
 
 /* vector channel functions */
 
@@ -176,6 +192,12 @@ int DatabusChannelOutIsValid(struct Databus * db, size_t channel);
  * FALSE if it has no reference or \a db or \a channel are invalid.
  */
 int DatabusChannelLocalIsValid(struct Databus * db, size_t channel);
+
+/**
+ * \return \c TRUE if the rtfactor channel \a channel in \a db has a reference, and \c
+ * FALSE if it has no reference or \a db or \a channel are invalid.
+ */
+int DatabusChannelRTFactorIsValid(struct Databus * db, size_t channel);
 
 
 /** private interface for Component **/
@@ -253,6 +275,13 @@ struct DatabusInfo * DatabusGetOutInfo(struct Databus * db);
 struct DatabusInfo * DatabusGetLocalInfo(Databus * db);
 
 /**
+ * Accessor for \a rtfactorInfo.
+ *
+ * \return \c NULL if \a db is invalid.
+ */
+struct DatabusInfo * DatabusGetRTFactorInfo(Databus * db);
+
+/**
  * \return the number of \c ChannelInfo where \c GetWriteResultFlag is \c true.
  */
 size_t DatabusInfoGetNumWriteChannels(DatabusInfo * dbInfo);
@@ -280,6 +309,12 @@ struct ChannelOut * DatabusGetOutChannel(struct Databus * db, size_t i);
  */
 struct Channel * DatabusGetLocalChannel(Databus * db, size_t i);
 
+/**
+ * Accessor function for the \a i-th rtfactor channel of \a db.
+ *
+ * \return \a NULL if \a db or \a i are invalid.
+ */
+struct Channel * DatabusGetRTFactorChannel(Databus * db, size_t i);
 
 extern const struct ObjectClass _Databus;
 
