@@ -10,7 +10,7 @@ set VCPKG_DEFAULT_TRIPLET=x64-windows
 
 if not exist vcpkg git clone https://github.com/Microsoft/vcpkg.git
 cd .\vcpkg\
-git checkout 2020.04
+git checkout 2023.02.24
 if not exist vcpkg.exe call .\bootstrap-vcpkg.bat
 call .\vcpkg.exe install libxml2 zlib
 cd ..
