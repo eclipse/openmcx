@@ -17,7 +17,7 @@
 
     <xs:simpleType name="ResultLevelT">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="micro"/>
+            <xs:enumeration value="none"/>
             <xs:enumeration value="coupling"/>
             <xs:enumeration value="synchronization"/>
         </xs:restriction>
