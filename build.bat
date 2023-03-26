@@ -10,7 +10,7 @@ set VCPKG_DEFAULT_TRIPLET=x64-windows
 
 if not exist vcpkg git clone https://github.com/Microsoft/vcpkg.git
 cd .\vcpkg\
-git checkout 2020.04
+git checkout 2023.02.24
 if not exist vcpkg.exe call .\bootstrap-vcpkg.bat
 call .\vcpkg.exe install libxml2 zlib
 cd ..
@@ -25,7 +25,7 @@ set VERBOSE=1
 
 setlocal EnableDelayedExpansion
 rem Check installed Visual Studio versions and choose the newest one
-for %%x in ("16 2019" "10 2017" "14 2015") do (
+for %%x in ("17 2022" "16 2019" "10 2017" "14 2015") do (
     for /f "tokens=1,2" %%a in (%%x) do (
         reg query "HKEY_CLASSES_ROOT\VisualStudio.DTE.%%a.0" >> nul 2>&1
         if !ERRORLEVEL! equ 0 (
