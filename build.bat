@@ -10,7 +10,12 @@ set VCPKG_DEFAULT_TRIPLET=x64-windows
 
 if not exist vcpkg git clone https://github.com/Microsoft/vcpkg.git
 cd .\vcpkg\
-git checkout 2023.02.24
+
+rem By default we use the master branch of vcpkg.
+rem The last successfully tested vcpkg release was 2023.07.21.
+rem Uncomment the next line to use this specific release of vcpkg (this might help if the current master branch of vcpkg makes problems)
+rem git checkout 2023.07.21
+
 if not exist vcpkg.exe call .\bootstrap-vcpkg.bat
 call .\vcpkg.exe install libxml2 zlib
 cd ..
