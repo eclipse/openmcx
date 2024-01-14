@@ -26,8 +26,8 @@ void mcx_sort(void *base, size_t nmemb, size_t size,
 }
 #else
 void mcx_sort(void *base, size_t nmemb, size_t size,
-		      int (*compar)(const void *, const void *, void *), void *arg) {
-    qsort_r(base, nmemb, size, compar, arg);
+              int (*compar)(const void *, const void *, void *), void *arg) {
+   qsort_r(base, nmemb, size, compar, arg);
 }
 #endif
 

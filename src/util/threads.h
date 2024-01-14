@@ -20,7 +20,11 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <stdint.h>
+
+#if(__APPLE__)
 #include <sys/types.h>
+#endif
+
 #if defined(OS_WINDOWS)
 #define _WINSOCKAPI_    // stops windows.h including winsock.h
 #include <windows.h>

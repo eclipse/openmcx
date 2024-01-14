@@ -11,7 +11,9 @@
 #ifndef MCX_UTIL_MUTEX_H
 #define MCX_UTIL_MUTEX_H
 
+#if(__APPLE__)
 #include "sys/types.h"
+#endif
 
 #include "CentralParts.h"
 #if defined (ENABLE_MT)

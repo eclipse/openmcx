@@ -38,7 +38,7 @@ void mcx_sort(void *base, size_t nmemb, size_t size,
               int (*compar)(void *, const void *, const void *), void *arg);
 #else
 void mcx_sort(void *base, size_t nmemb, size_t size,
-		      int (*compar)(const void *, const void *, void *), void *arg);
+              int (*compar)(const void *, const void *, void *), void *arg);
 #endif
 int mcx_natural_sort_cmp(const char * left, const char * right);
 

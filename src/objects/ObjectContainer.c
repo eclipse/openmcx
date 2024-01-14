@@ -87,7 +87,7 @@ static int ObjectContainerElementCmp(void *ctx, const void *first,
                                      const void *second) {
 #else
 static int ObjectContainerElementCmp(const void * first, const void * second,
-		                             void * ctx) {
+                                     void * ctx) {
 #endif
     StrCmpCtx *data = (StrCmpCtx *)ctx;
 
