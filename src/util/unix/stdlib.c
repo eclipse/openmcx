@@ -19,9 +19,17 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-void mcx_sort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *, void *), void *arg) {
+#if (__APPLE__)
+void mcx_sort(void *base, size_t nmemb, size_t size,
+              int (*compar)(void *, const void *, const void *), void *arg) {
+    qsort_r(base, nmemb, size, arg, compar);
+}
+#else
+void mcx_sort(void *base, size_t nmemb, size_t size,
+		      int (*compar)(const void *, const void *, void *), void *arg) {
     qsort_r(base, nmemb, size, compar, arg);
 }
+#endif
 
 
 #ifdef __cplusplus
