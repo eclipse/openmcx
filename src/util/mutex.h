@@ -11,8 +11,9 @@
 #ifndef MCX_UTIL_MUTEX_H
 #define MCX_UTIL_MUTEX_H
 
-#include "CentralParts.h"
+#include "sys/types.h"
 
+#include "CentralParts.h"
 #if defined (ENABLE_MT)
 
 #ifdef __cplusplus
