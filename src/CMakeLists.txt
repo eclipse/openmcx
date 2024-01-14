@@ -94,7 +94,7 @@ target_compile_definitions(
 )
 
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
     set_target_properties(mcx_common PROPERTIES LINK_OPTIONS -Wl,--exclude-libs,ALL)
 endif()
 
