@@ -22,6 +22,12 @@ extern "C" {
 #if (__APPLE__)
 void mcx_sort(void *base, size_t nmemb, size_t size,
               int (*compar)(void *, const void *, const void *), void *arg) {
+    // FreeBSD added qsort_r in Sept 2002, but with a poor interface. In
+    // 2008 GNU fixed the interface and decided the compatibility breakage
+    // was worth it following ISO. Linux is GNU. OS X is a mish-mash of many
+    // things, but for C it follows BSD. As a result, we have difference in
+    // the non-standard qsort_r function.
+    // See https://stackoverflow.com/a/39561369 for details.
     qsort_r(base, nmemb, size, arg, compar);
 }
 #else
