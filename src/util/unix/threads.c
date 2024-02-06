@@ -78,9 +78,11 @@ int pthread_timedjoin_p(pthread_t td, void **res, struct timespec *ts)
     pthread_mutex_lock(&args.mtx);
 
     ret = pthread_create(&tmp, 0, waiter, &args);
-    if (!ret)
-            do ret = pthread_cond_timedwait(&args.cond, &args.mtx, ts);
-        while (!args.joined && ret != ETIMEDOUT);
+    if (!ret) {
+        do {
+            ret = pthread_cond_timedwait(&args.cond, &args.mtx, ts);
+        } while (!args.joined && ret != ETIMEDOUT);
+    }
 
     pthread_mutex_unlock(&args.mtx);
 
